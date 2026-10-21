@@ -1,0 +1,68 @@
+name: Publish SDK
+on:
+  workflow_dispatch:
+    inputs:
+      registry:
+        description: Package registry
+        required: true
+        type: choice
+        options: [pypi, npm]
+      version:
+        description: Exact package version to publish
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: publish-${{ inputs.registry }}
+  cancel-in-progress: false
+jobs:
+  python:
+    if: github.ref == 'refs/heads/main' && inputs.registry == 'pypi'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install --no-deps -r requirements-bootstrap.txt
+      - run: pip install build twine pytest -e python
+      - name: Validate version and test
+        run: |
+          python -c "import os,tomllib; assert tomllib.load(open('python/pyproject.toml','rb'))['project']['version'] == os.environ['RELEASE_VERSION']"
+          cd python && pytest -q tests
+      - run: python -m build python --outdir dist && python -m twine check dist/*
+      - name: Publish through PyPI trusted publishing
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086
+  javascript:
+    if: github.ref == 'refs/heads/main' && inputs.registry == 'npm'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+    defaults:
+      run:
+        working-directory: js
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts
+      - name: Validate version and test
+        run: |
+          node -e "if (JSON.parse(require('fs').readFileSync('package.json','utf8')).version !== process.env.RELEASE_VERSION) process.exit(1)"
+          npm test
+      - run: npm publish --access public --provenance
