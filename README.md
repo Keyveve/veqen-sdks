@@ -11,7 +11,7 @@ Check signup risk from email, IP, phone and domain signals. Responses include a 
 ### Python
 
 ```sh
-pip install https://veqen-app.com/static/sdk/veqen-0.1.0-py3-none-any.whl
+pip install veqen==0.1.0
 ```
 
 ```python
@@ -33,11 +33,13 @@ const client = new Veqen();
 console.log((await client.signup({email: "example@mailinator.com", ip: "8.8.8.8"})).risk);
 ```
 
-These versioned downloads work now; package-registry publishing is tracked separately. See [Python](python/README.md), [JavaScript](js/README.md), [API documentation](https://veqen-app.com/docs), [pricing](https://veqen-app.com/pricing), and the [free tools](https://veqen-app.com/tools).
+The Python SDK is published on PyPI; the JavaScript download works while npm publication is being completed. See [Python](python/README.md), [JavaScript](js/README.md), [API documentation](https://veqen-app.com/docs), [pricing](https://veqen-app.com/pricing), and the [free tools](https://veqen-app.com/tools).
 
 ## Connect an AI agent
 
 MCP endpoint: `https://veqen-app.com/mcp`. Use OAuth or a Veqen API key. The official registry name is `io.github.Keyveve/veqen`. [Connection instructions](https://veqen-app.com/ai-agents).
+
+Compatible Agent Plugins clients and directories can import this repository: root `plugin.json` and `mcp.json` follow the [Agent Plugins 1.0.0 schemas](https://agent-plugins.org/). They point to the hosted server and contain no credentials; OAuth authentication is managed by your client. Other MCP clients can connect directly to the endpoint above.
 
 Checks spend credits (one for individual checks, three for signup checks); balance reads are free. Enabled auto top-ups can charge a saved payment method when credits run low.
 

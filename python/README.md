@@ -3,7 +3,7 @@
 Official Python client for [Veqen](https://veqen-app.com): catch disposable emails, typos, datacenter and Tor IPs, and VoIP numbers with one API call.
 
 ```bash
-pip install https://veqen-app.com/static/sdk/veqen-0.1.0-py3-none-any.whl
+pip install veqen==0.1.0
 ```
 
 ```python
