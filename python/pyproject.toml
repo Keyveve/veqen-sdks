@@ -4,7 +4,8 @@ version = "0.1.0"
 description = "Official Python client for the Veqen signup-check API: disposable emails, datacenter IPs, VoIP numbers and more."
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = ["httpx>=0.25"]
 keywords = ["email validation", "disposable email", "fraud", "signup", "ip lookup", "phone validation", "vpn detection"]
 classifiers = [
@@ -16,9 +17,11 @@ classifiers = [
 [project.urls]
 Homepage = "https://veqen-app.com"
 Documentation = "https://veqen-app.com/docs"
+Source = "https://github.com/Keyveve/veqen-sdks/tree/main/python"
+Issues = "https://github.com/Keyveve/veqen-sdks/issues"
 
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]

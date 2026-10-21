@@ -18,5 +18,11 @@
   },
   "keywords": ["email validation", "disposable email", "fraud", "signup", "ip lookup", "phone validation", "vpn detection", "mcp"],
   "homepage": "https://veqen-app.com/docs/sdks",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Keyveve/veqen-sdks.git",
+    "directory": "js"
+  },
+  "bugs": { "url": "https://github.com/Keyveve/veqen-sdks/issues" },
   "license": "MIT"
 }
