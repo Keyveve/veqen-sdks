@@ -1,0 +1,27 @@
+name: Refresh public disposable-email data
+on:
+  schedule:
+    - cron: '23 7 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: public-data
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: python scripts/refresh_data.py
+      - name: Commit changed data
+        run: |
+          git add data/disposable-email-domains.txt data/source.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Refresh disposable-email data from upstream'
+          git push
