@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
 license-files = ["LICENSE"]
-dependencies = ["httpx>=0.25"]
+dependencies = ["httpx>=0.25", "certifi>=2026.10.19"]
 keywords = ["email validation", "disposable email", "fraud", "signup", "ip lookup", "phone validation", "vpn detection"]
 classifiers = [
     "Programming Language :: Python :: 3",
