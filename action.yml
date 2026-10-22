@@ -1,0 +1,77 @@
+name: Veqen AI cost review
+description: Comment the cost impact of AI model changes on pull requests, and fail before models or APIs in your code retire.
+author: Keyveve, Inc.
+branding:
+  icon: dollar-sign
+  color: orange
+
+inputs:
+  api-key:
+    description: A Veqen API key from a Pro or Team organization, to price changes at your real production volume.
+    required: false
+    default: ""
+  fail-within-days:
+    description: Fail the check when a model or API used in the code retires within this many days.
+    required: false
+    default: ""
+  base:
+    description: Ref to compare against. Defaults to the pull request's base branch.
+    required: false
+    default: ""
+  github-token:
+    description: Token used to post the comment.
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: composite
+  steps:
+    - name: Require an unprivileged pull request workflow
+      if: github.event_name == 'pull_request_target'
+      shell: bash
+      run: |
+        echo '::error::Use pull_request for cost review. Do not run this action with pull_request_target.'
+        exit 1
+
+    - uses: actions/setup-node@v5
+      with:
+        node-version: "22"
+
+    - name: Install the published CLI outside the reviewed checkout
+      shell: bash
+      working-directory: ${{ runner.temp }}
+      run: |
+        set -euo pipefail
+        CLI_DIR=$(mktemp -d "$RUNNER_TEMP/veqen-cli.XXXXXX")
+        cd "$CLI_DIR"
+        npm install --prefix "$CLI_DIR" --registry https://registry.npmjs.org --ignore-scripts --no-audit --no-fund --package-lock=false veqen@1
+        echo "VEQEN_REVIEW_CLI=$CLI_DIR/node_modules/veqen/bin/veqen.js" >> "$GITHUB_ENV"
+
+    - name: Review model changes
+      if: github.event_name == 'pull_request'
+      shell: bash
+      env:
+        VEQEN_API_KEY: ${{ inputs.api-key }}
+        GH_TOKEN: ${{ inputs.github-token }}
+        BASE: ${{ inputs.base || format('origin/{0}', github.base_ref) }}
+        PR: ${{ github.event.pull_request.number }}
+      run: |
+        set -euo pipefail
+        node "$VEQEN_REVIEW_CLI" diff "$BASE" --format markdown > "$RUNNER_TEMP/veqen-review.md"
+        cat "$RUNNER_TEMP/veqen-review.md" >> "$GITHUB_STEP_SUMMARY"
+        # Fork pull requests get a read-only token: the review stays in the job summary instead of failing.
+        comment() { gh api "$@" -F "body=@$RUNNER_TEMP/veqen-review.md" > /dev/null || echo "::notice::Couldn't comment on the pull request; the review is in the job summary."; }
+        EXISTING=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+          --jq '.[] | select(.body | contains("<!-- veqen-cost-review -->")) | .id' 2>/dev/null | head -n 1 || true)
+        if [ -n "$EXISTING" ]; then
+          comment -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$EXISTING"
+        elif ! grep -q "No model changes" "$RUNNER_TEMP/veqen-review.md"; then
+          comment "repos/$GITHUB_REPOSITORY/issues/$PR/comments"  # no new thread when nothing changed
+        fi
+
+    - name: Check retirement dates
+      if: inputs.fail-within-days != ''
+      shell: bash
+      env:
+        WITHIN: ${{ inputs.fail-within-days }}
+      run: node "$VEQEN_REVIEW_CLI" scan --fail-within "$WITHIN"

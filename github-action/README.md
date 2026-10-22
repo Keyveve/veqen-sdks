@@ -25,3 +25,7 @@ jobs:
 Use `pull_request`, never `pull_request_target` with an untrusted checkout. The action rejects that privileged event, installs the published CLI into a fresh temporary directory with install scripts disabled, and disables external Git diff/text conversion programs. It does not execute the reviewed project's code or locally installed binaries.
 
 This directory is the source; it's published from the public `Keyveve/veqen-sdks` repository and tagged `v1`.
+
+The repository-root `action.yml` is the GitHub Marketplace entry point. The
+`github-action/action.yml` entry remains available for existing subdirectory
+references. Keep both manifests in sync when changing the Action.
