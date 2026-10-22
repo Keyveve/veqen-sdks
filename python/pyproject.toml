@@ -1,18 +1,23 @@
 [project]
 name = "veqen"
-version = "0.1.0"
-description = "Official Python client for the Veqen signup-check API: disposable emails, datacenter IPs, VoIP numbers and more."
+version = "1.0.0"
+description = "The cost ledger for AI inference: exact cost for every model call (text, embeddings, images, video, speech and transcription, across labs, open-model hosts and clouds), per customer, feature and project, with budgets."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "MIT"
-license-files = ["LICENSE"]
-dependencies = ["httpx>=0.25", "certifi>=2026.10.19"]
-keywords = ["email validation", "disposable email", "fraud", "signup", "ip lookup", "phone validation", "vpn detection"]
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES"]
+dependencies = []
+keywords = ["llm cost", "token cost", "openai pricing", "anthropic pricing", "ai cost tracking", "llm budget", "finops", "cogs"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Intended Audience :: Developers",
-    "Topic :: Security",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Office/Business :: Financial :: Accounting",
 ]
+
+[project.optional-dependencies]
+langchain = ["langchain-core>=0.3"]
+test = ["pytest>=8", "langchain-core>=0.3"]
 
 [project.urls]
 Homepage = "https://veqen-app.com"
@@ -24,5 +29,21 @@ Issues = "https://github.com/Keyveve/veqen-sdks/issues"
 requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-packages = ["veqen"]
+[tool.setuptools.packages.find]
+include = ["veqen*"]
+
+[tool.setuptools.package-data]
+veqen = ["data/*.json"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["veqen", "conftest"]
+
+[tool.pytest.ini_options]
+addopts = "-q -p no:cacheprovider"

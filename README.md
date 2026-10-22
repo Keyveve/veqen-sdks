@@ -1,58 +1,76 @@
-# Veqen SDKs and disposable-email data
+# Veqen: the cost ledger for AI inference
 
-Official Python and JavaScript/TypeScript clients for [Veqen](https://veqen-app.com), a product of Keyveve, Inc.
+Record model usage, calculate cost from a versioned price book, and attribute it to a customer, feature, user or project. The Python and JavaScript SDKs work locally without an account. Connect the optional [Veqen dashboard](https://veqen-app.com) for shared budgets, provider reconciliation and finance exports.
 
-Check signup risk from email, IP, phone and domain signals. Responses include a score, an admit/review/refuse verdict, and reasons. Scores are heuristic signals, not probabilities or guarantees of fraud.
-
-## Start with 1,000 free monthly credits
-
-[Create an account](https://veqen-app.com/signup), verify your email, and create an API key. Keep it on your server in `VEQEN_API_KEY`.
-
-### Python
+## Python
 
 ```sh
-pip install veqen==0.1.0
+pip install 'veqen>=1,<2'
 ```
 
 ```python
-from veqen import Veqen
-with Veqen() as client:
-    result = client.signup(email="example@mailinator.com", ip="8.8.8.8")
-    print(result["risk"])
+import veqen
+from openai import OpenAI
+
+client = veqen.wrap(OpenAI(), feature="support-bot")
+with veqen.tags(customer="acme"):
+    client.responses.create(model="gpt-5-mini", input="Where is my order?")
 ```
 
-### JavaScript / TypeScript
+Python 3.10+, no runtime dependencies. See [Python documentation](python/README.md) for optional integrations.
+
+## JavaScript and TypeScript
 
 ```sh
-npm install https://veqen-app.com/static/sdk/veqen-sdk-0.1.0.tgz
+npm install veqen@^1
 ```
 
 ```javascript
-import { Veqen } from "@veqen/sdk";
-const client = new Veqen();
-console.log((await client.signup({email: "example@mailinator.com", ip: "8.8.8.8"})).risk);
+import OpenAI from "openai";
+import { wrap, withTags } from "veqen";
+
+const client = wrap(new OpenAI(), { feature: "support-bot" });
+await withTags({ customer: "acme" }, () =>
+  client.responses.create({ model: "gpt-5-mini", input: "Where is my order?" }));
 ```
 
-The Python SDK is published on PyPI; the JavaScript download works while npm publication is being completed. See [Python](python/README.md), [JavaScript](js/README.md), [API documentation](https://veqen-app.com/docs), [pricing](https://veqen-app.com/pricing), and the [free tools](https://veqen-app.com/tools).
+Node.js 20+, ESM, TypeScript declarations, no runtime dependencies. See [JavaScript documentation](js/README.md).
 
-## Connect an AI agent
+## Free CLI and pull-request reviews
 
-MCP endpoint: `https://veqen-app.com/mcp`. Use OAuth or a Veqen API key. The official registry name is `io.github.Keyveve/veqen`. [Connection instructions](https://veqen-app.com/ai-agents).
+```sh
+npx veqen@1 scan
+npx veqen@1 diff origin/main
+npx veqen@1 audit
+npx veqen@1 report
+```
 
-Compatible Agent Plugins clients and directories can import this repository: root `plugin.json` and `mcp.json` follow the [Agent Plugins 1.0.0 schemas](https://agent-plugins.org/). They point to the hosted server and contain no credentials; OAuth authentication is managed by your client. Other MCP clients can connect directly to the endpoint above.
+Scan model references for prices and retirement dates, compare model changes, import provider usage locally with your admin key, or report on a local ledger. The [cost-review Action](github-action/README.md) adds a pull-request summary and optional retirement checks. It never executes the reviewed application's code. Use `pull_request`, not `pull_request_target`.
 
-Checks spend credits (one for individual checks, three for signup checks); balance reads are free. Enabled auto top-ups can charge a saved payment method when credits run low.
+## Accuracy, budgets and privacy
 
-## Disposable-email data
+Costs use provider-reported usage and the bundled price book, including supported cache, batch, tier and residency rules. Negotiated rates, missing usage and unsupported model variants need explicit prices or reconciliation; calculated costs are not a provider invoice. Derived price data retains its [upstream MIT attribution](pricebook/THIRD_PARTY_NOTICES).
 
-[data/disposable-email-domains.txt](data/disposable-email-domains.txt) mirrors the upstream CC0 [disposable-email-domains](https://github.com/disposable-email-domains/disposable-email-domains) blocklist. The scheduled workflow refreshes it daily and records the upstream revision. A listed domain is a signal to investigate; it does not establish that a person is fraudulent. The API adds DNS and other context beyond this list.
+Budgets check recorded spend before a wrapped call. They block subsequent calls once the observed limit is reached; a call already in flight can exceed it. Local budgets are per process and reset on restart. Dashboard budgets are polled, so concurrency, ingestion and polling delays can also cause overshoot. These are not guaranteed spending caps.
+
+No account or network reporting is required for local cost tracking. Set `VEQEN_API_KEY` to send usage metadata and your tags to Veqen. Avoid personal data and secrets in tags. The SDK does not send prompt or response content.
+
+## Agent integration
+
+Connect to `https://veqen-app.com/mcp` using OAuth or a Veqen API key. Root `plugin.json`, `mcp.json` and [skills](skills/) describe the agent integration. See [connection instructions](https://veqen-app.com/ai-agents).
+
+## Migrating from 0.x
+
+Version 1 is a different product and a breaking API change. The old `Veqen().signup(...)` risk-check client and `@veqen/sdk` JavaScript package are not compatible with these APIs. Remove those integrations before upgrading; the retired signup-check endpoints must not be used for new implementations. The historical `data/` blocklist remains for attribution and compatibility, but is no longer refreshed here.
 
 ## Development
 
 ```sh
-python -m pip install -e python pytest
-cd python && python -m pytest tests
-cd ../js && npm ci --ignore-scripts && npm test
+python -m pip install -e 'python[test]'
+python -m pytest python/tests
+cd js
+npm ci --ignore-scripts
+npm test
 ```
 
-Client code: [MIT](LICENSE). Dataset: CC0; see [data/README.md](data/README.md). Support: [support@veqen-app.com](mailto:support@veqen-app.com).
+Code: [MIT](LICENSE). Historical dataset: [CC0](data/README.md). Support: [support@veqen-app.com](mailto:support@veqen-app.com).

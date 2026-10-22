@@ -1,0 +1,39 @@
+[
+ {
+  "date": "2026-10-22",
+  "model": "azure-ai/jais-30b-chat",
+  "change": "removed"
+ },
+ {
+  "date": "2026-10-22",
+  "model": "watsonx/core42/jais-13b-chat",
+  "change": "removed"
+ },
+ {
+  "date": "2026-10-22",
+  "model": "runway/eleven_multilingual_v2",
+  "field": "unit",
+  "old": 3e-07,
+  "new": 0.0002
+ },
+ {
+  "date": "2026-10-22",
+  "model": "deepgram/streaming/detect_entities",
+  "change": "removed"
+ },
+ {
+  "date": "2026-10-22",
+  "model": "deepgram/streaming/diarize",
+  "change": "removed"
+ },
+ {
+  "date": "2026-10-22",
+  "model": "deepgram/streaming/keyterm",
+  "change": "removed"
+ },
+ {
+  "date": "2026-10-22",
+  "model": "deepgram/streaming/redact",
+  "change": "removed"
+ }
+]

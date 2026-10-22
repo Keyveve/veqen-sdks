@@ -1,7 +1,7 @@
 {
-  "name": "@veqen/sdk",
-  "version": "0.1.0",
-  "description": "Official client for the Veqen signup-check API: disposable emails, datacenter IPs, VoIP numbers and more.",
+  "name": "veqen",
+  "version": "1.0.0",
+  "description": "The cost ledger for AI inference: exact cost for every model call (text, embeddings, images, video, speech and transcription, across labs, open-model hosts and clouds), per customer, feature and project, with budgets. Includes the `veqen` CLI.",
   "type": "module",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
@@ -9,20 +9,65 @@
     ".": {
       "types": "./src/index.d.ts",
       "default": "./src/index.js"
+    },
+    "./ai-sdk": {
+      "types": "./src/index.d.ts",
+      "default": "./src/ai-sdk.js"
+    },
+    "./langchain": {
+      "types": "./src/index.d.ts",
+      "default": "./src/langchain.js"
+    },
+    "./prices": {
+      "default": "./src/prices.js"
     }
   },
-  "files": ["src"],
-  "engines": { "node": ">=20" },
+  "bin": {
+    "veqen": "./bin/veqen.js"
+  },
+  "files": [
+    "src",
+    "bin",
+    "THIRD_PARTY_NOTICES"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "sideEffects": false,
   "scripts": {
     "test": "node --test"
   },
-  "keywords": ["email validation", "disposable email", "fraud", "signup", "ip lookup", "phone validation", "vpn detection", "mcp"],
-  "homepage": "https://veqen-app.com/docs/sdks",
+  "peerDependencies": {
+    "@langchain/core": ">=0.3"
+  },
+  "peerDependenciesMeta": {
+    "@langchain/core": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "llm cost",
+    "token cost",
+    "openai",
+    "anthropic",
+    "gemini",
+    "ai sdk",
+    "langchain",
+    "budget",
+    "finops",
+    "pricing"
+  ],
+  "homepage": "https://veqen-app.com/docs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Keyveve/veqen-sdks.git",
     "directory": "js"
   },
-  "bugs": { "url": "https://github.com/Keyveve/veqen-sdks/issues" },
-  "license": "MIT"
+  "bugs": {
+    "url": "https://github.com/Keyveve/veqen-sdks/issues"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@langchain/core": ">=0.3"
+  }
 }

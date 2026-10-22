@@ -1,15 +1,15 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "veqen",
-  "version": "0.1.0",
-  "description": "Check signup risk from email, IP, phone and domain signals. Get a verdict and reasons through Veqen's hosted MCP server.",
+  "version": "1.0.0",
+  "description": "The cost ledger for AI inference: ask about AI spend by customer, feature and model, check it against provider bills, estimate model switches, and add cost tracking to code.",
   "author": {
     "name": "Keyveve, Inc.",
     "email": "support@veqen-app.com",
     "url": "https://veqen-app.com"
   },
-  "homepage": "https://veqen-app.com/ai-agents",
+  "homepage": "https://veqen-app.com/docs/mcp",
   "repository": "https://github.com/Keyveve/veqen-sdks",
   "license": "MIT",
-  "keywords": ["signup-risk", "disposable-email", "ip-reputation", "phone-validation", "mcp"]
+  "keywords": ["llm-cost", "ai-spend", "finops", "token-pricing", "budgets", "mcp"]
 }

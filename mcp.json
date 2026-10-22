@@ -4,6 +4,10 @@
     "veqen": {
       "type": "streamable-http",
       "url": "https://veqen-app.com/mcp"
+    },
+    "veqen-prices": {
+      "type": "streamable-http",
+      "url": "https://veqen-app.com/mcp/prices"
     }
   }
 }

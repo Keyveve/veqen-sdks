@@ -1,0 +1,13 @@
+title = "Veqen secret scanning"
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Exact, public test-only signing secret used in isolated database fixtures"
+regexTarget = "secret"
+regexes = ['''^test-secret-key-that-is-long-enough-0123456789$''']
+
+[[allowlists]]
+description = "Documentation example of a non-secret idempotency identifier"
+regexTarget = "secret"
+regexes = ['''^signup-7f3e2a91$''']
