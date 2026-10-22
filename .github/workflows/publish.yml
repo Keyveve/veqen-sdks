@@ -66,3 +66,8 @@ jobs:
           node -e "if (JSON.parse(require('fs').readFileSync('package.json','utf8')).version !== process.env.RELEASE_VERSION) process.exit(1)"
           npm test
       - run: npm publish --access public --provenance
+        env:
+          # First publication establishes the package before npm permits a
+          # trusted publisher. Remove this optional secret after bootstrap;
+          # subsequent releases authenticate through the OIDC permission above.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_BOOTSTRAP_TOKEN }}
