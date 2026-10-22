@@ -37,7 +37,7 @@ npx veqen audit                 # last 30 days from your OpenAI or Anthropic adm
 npx veqen report                # cost by customer, feature and model from a local ledger (init({ ledgerFile }))
 ```
 
-In serverless functions, `await flush()` before returning. Set `VEQEN_API_KEY` to send calls to the [Veqen dashboard](https://veqen-app.com) for shared budgets, reconciliation with your provider bills, custom and self-hosted prices, margin per customer and month-end journal entries. Free for 60,000 tracked calls a month.
+In serverless functions, `await flush()` before returning. Set `VEQEN_API_KEY` to send calls to the [Veqen dashboard](https://veqen-app.com/signup?utm_source=javascript-sdk&utm_medium=package&utm_campaign=launch-v1) for shared budgets, reconciliation with your provider bills, custom and self-hosted prices, margin per customer and month-end journal entries. Free for 60,000 tracked calls a month.
 
 Docs: https://veqen-app.com/docs/javascript · Model prices: https://veqen-app.com/models · MIT licensed.
 
