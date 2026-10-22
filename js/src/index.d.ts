@@ -1,134 +1,79 @@
-export type Verdict = "admit" | "review" | "refuse";
-
-export interface Reason {
-  code: string;
-  impact: number;
-  message: string;
-  source?: "email" | "ip" | "phone" | "signup" | null;
+export interface Usage {
+  /** Uncached input tokens. */
+  inputTokens?: number;
+  /** Output tokens, including reasoning tokens. */
+  outputTokens?: number;
+  cacheReadTokens?: number;
+  /** 5-minute cache writes. */
+  cacheWriteTokens?: number;
+  cacheWrite1hTokens?: number;
+  audioInputTokens?: number;
+  audioOutputTokens?: number;
+  /** Images for image models, seconds for video and transcription, characters for speech, queries for rerank, pages for OCR. */
+  units?: number;
 }
-
-export interface Risk {
-  score: number;
-  level: "low" | "medium" | "high";
-  verdict: Verdict;
-  reasons: Reason[];
+export interface CostOptions {
+  provider?: string;
+  batch?: boolean;
+  serviceTier?: "standard" | "priority" | "flex" | string;
+  residency?: "us" | string;
+  /** An image size and quality ("hd/1024x1792") or a video resolution ("1080p"). */
+  variant?: string;
 }
-
-export interface DomainInfo {
-  exists: boolean;
-  accepts_mail: boolean | null;
-  mx: string[];
-  null_mx: boolean;
-  spf: boolean;
-  dmarc: boolean;
-  registered_at: string | null;
-  age_days: number | null;
-  registrar: string | null;
+export type Tags = { customer?: string; feature?: string; user?: string; project?: string; environment?: string } & Record<string, string>;
+export interface Price {
+  key: string;
+  provider: string;
+  model: string;
+  kind: "text" | "embedding" | "realtime" | "image" | "video" | "speech" | "transcription" | "rerank" | "ocr";
+  unit?: "image" | "second" | "character" | "query" | "page";
+  rates: Record<string, Record<string, number>>;
+  context?: number;
+  retires?: string;
+  replacement?: string;
 }
-
-export interface EmailCheck {
-  email: string;
-  valid_syntax: boolean;
-  syntax_error?: string | null;
-  normalized?: string | null;
-  canonical?: string | null;
-  local_part?: string | null;
-  domain?: string | null;
-  disposable?: boolean | null;
-  free_provider?: boolean | null;
-  role_account?: boolean | null;
-  plus_addressed?: boolean | null;
-  did_you_mean?: string | null;
-  domain_info?: DomainInfo | null;
-  mailbox?: { checked: boolean; result: "deliverable" | "undeliverable" | "catch_all" | "unknown"; smtp_code?: number | null; reason?: string | null } | null;
-  risk: Risk;
+export interface LedgerEvent {
+  id: string;
+  ts: string;
+  provider: string;
+  model: string;
+  cost_usd: number | null;
+  [key: string]: unknown;
 }
-
-export interface IpCheck {
-  ip: string;
-  valid: boolean;
-  version?: number | null;
-  type?: "public" | "private" | "loopback" | "link_local" | "multicast" | "reserved" | "special" | null;
-  location?: {
-    country_code: string | null;
-    country: string | null;
-    in_eu: boolean | null;
-    region: string | null;
-    city: string | null;
-    continent: string | null;
-    latitude: number | null;
-    longitude: number | null;
-  } | null;
-  network?: {
-    asn: number | null;
-    organization: string | null;
-    kind: "cloud" | "hosting" | "cdn" | "vpn_hosting" | "isp" | "unknown";
-    kind_label: string;
-    known_network: string | null;
-  } | null;
-  flags?: { hosting: boolean; vpn_likely: boolean; relay: boolean; tor: boolean } | null;
-  risk: Risk;
+export declare class BudgetExceeded extends Error {
+  scope: string;
+  value: string;
+  limitUsd: number;
 }
-
-export interface PhoneCheck {
-  input: string;
-  valid: boolean;
-  possible: boolean;
-  error?: string | null;
-  e164?: string | null;
-  international?: string | null;
-  national?: string | null;
-  calling_code?: number | null;
-  country_code?: string | null;
-  country?: string | null;
-  location?: string | null;
-  line_type?: string | null;
-  line_type_label?: string | null;
-  carrier?: string | null;
-  time_zones: string[];
-  risk: Risk;
-}
-
-export interface DomainCheck extends Partial<DomainInfo> {
-  input: string;
-  valid: boolean;
-  domain?: string | null;
-  disposable?: boolean | null;
-  free_provider?: boolean | null;
-  risk: Risk;
-}
-
-export interface SignupCheck {
-  email: EmailCheck | null;
-  ip: IpCheck | null;
-  phone: PhoneCheck | null;
-  risk: Risk;
-}
-
-export interface VeqenOptions {
+export declare function init(options?: {
   apiKey?: string;
-  baseUrl?: string;
-  timeoutMs?: number;
-  maxRetries?: number;
-  fetch?: typeof fetch;
-}
-
-export class VeqenError extends Error {
-  status: number;
-  type: string;
-  requestId: string | null;
-}
-
-export class Veqen {
-  constructor(options?: VeqenOptions);
-  email(email: string, options?: { verifyMailbox?: boolean; idempotencyKey?: string }): Promise<EmailCheck>;
-  emails(emails: string[], options?: { verifyMailbox?: boolean }): Promise<EmailCheck[]>;
-  ip(ip: string, options?: { idempotencyKey?: string }): Promise<IpCheck>;
-  phone(phone: string, options?: { country?: string; idempotencyKey?: string }): Promise<PhoneCheck>;
-  domain(domain: string, options?: { idempotencyKey?: string }): Promise<DomainCheck>;
-  signup(input: { email?: string; ip?: string; phone?: string; phoneCountry?: string; verifyMailbox?: boolean; idempotencyKey?: string }): Promise<SignupCheck>;
-  account(): Promise<{ email: string; balance: { free: number; paid: number; total: number }; free_monthly_credits: number; free_resets_at: string; costs: Record<string, number>; rate_limit_per_second: number }>;
-  usage(days?: number): Promise<{ days: { date: string; credits: number; calls: number; by_check: Record<string, number> }[]; total_credits: number; total_calls: number }>;
-}
-
-export default Veqen;
+  endpoint?: string;
+  environment?: string;
+  ledgerFile?: string;
+  flushIntervalMs?: number;
+  budgetPollMs?: number;
+}): void;
+export declare function wrap<T>(client: T, defaults?: Tags & { residency?: string; provider?: string }): T;
+export declare function withTags<R>(tags: Tags, fn: () => R): R;
+export declare function currentTags(): Tags;
+export declare function budget(
+  limitUsd: number,
+  scope?: { customer?: string; feature?: string; user?: string; project?: string; period?: "month" | "day"; mode?: "block" | "warn" },
+): void;
+export declare function record(
+  provider: string | null,
+  model: string,
+  usage: Usage,
+  options?: CostOptions & { tags?: Tags; latencyMs?: number; costUsd?: number },
+): LedgerEvent;
+export declare function flush(): Promise<boolean>;
+export declare function cost(model: string, usage: Usage, options?: CostOptions): number | null;
+export declare function lookup(model: string, provider?: string): Price | null;
+export declare function priceCall(price: Price, usage: Usage, options?: CostOptions): number | null;
+export declare function unitRate(price: Price, variant?: string): number | null;
+export declare function providerForUrl(url: string): string | null;
+export declare const priceBook: { version: string; providers: Record<string, { name: string; group: string; pricing_url: string }>; models: Record<string, Omit<Price, "key" | "provider" | "model">> };
+/** Vercel AI SDK middleware (import from "veqen/ai-sdk"). */
+export declare function veqen(defaults?: Tags): { wrapGenerate: (...args: any[]) => Promise<any>; wrapStream: (...args: any[]) => Promise<any> };
+/** LangChain.js callback handler (import from "veqen/langchain"). */
+export declare class VeqenCallbackHandler { constructor(tags?: Tags); }

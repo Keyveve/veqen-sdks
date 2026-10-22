@@ -32,7 +32,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: python -m pip install --no-deps -r requirements-bootstrap.txt
-      - run: pip install build twine pytest -e python
+      - run: pip install build twine -e 'python[test]'
       - name: Validate version and test
         run: |
           python -c "import os,tomllib; assert tomllib.load(open('python/pyproject.toml','rb'))['project']['version'] == os.environ['RELEASE_VERSION']"
