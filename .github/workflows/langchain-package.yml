@@ -1,0 +1,48 @@
+name: LangChain package
+on:
+  pull_request:
+    paths: ['integrations/langchain/**', '.github/workflows/langchain-package.yml']
+  workflow_dispatch:
+    inputs:
+      publish:
+        type: boolean
+        default: false
+        description: Publish the tested package
+      version:
+        type: string
+        description: Exact package version to publish
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '${{ matrix.python }}'}
+      - run: pip install build twine pytest
+      - run: python -m build integrations/langchain --outdir dist && python -m twine check dist/*
+      - run: pip install dist/*.whl
+      - run: pytest -q integrations/langchain/tests
+      - uses: actions/upload-artifact@v4
+        if: matrix.python == '3.13'
+        with: {name: langchain-package, path: 'dist/*'}
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.publish
+    runs-on: ubuntu-latest
+    environment: pypi-langchain
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with: {name: langchain-package, path: dist}
+      - name: Check requested version
+        env: {RELEASE_VERSION: '${{ inputs.version }}'}
+        run: |
+          python -c "import os,pathlib,zipfile,email; w,=pathlib.Path('dist').glob('*.whl'); z=zipfile.ZipFile(w); m,=[n for n in z.namelist() if n.endswith('/METADATA')]; p=email.message_from_bytes(z.read(m)); assert p['Name']=='langchain-veqen' and p['Version']==os.environ['RELEASE_VERSION']"
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086
