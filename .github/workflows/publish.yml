@@ -60,30 +60,13 @@ jobs:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
-      # Pin npm's provenance helpers for the one-time interactive bootstrap.
+      # Current npm supports the scoped package's GitHub trusted publisher.
       - run: npm install --global npm@11.21.0 --ignore-scripts
       - run: npm ci --ignore-scripts
       - name: Validate version and test
         run: |
-          node -e "const v=JSON.parse(require('fs').readFileSync('package.json','utf8')).version; if (![v,v+'-rc.0'].includes(process.env.RELEASE_VERSION)) process.exit(1)"
-          # A candidate establishes a new npm package before trusted publishing
-          # can be configured. The stable version then validates the OIDC trust.
-          npm version "$RELEASE_VERSION" --no-git-tag-version --ignore-scripts --allow-same-version
+          node -e "const p=JSON.parse(require('fs').readFileSync('package.json','utf8')); if (p.name !== '@veqen/sdk' || p.version !== process.env.RELEASE_VERSION) process.exit(1)"
           npm test
-      - name: Prepare bootstrap candidate with verified provenance
-        if: endsWith(inputs.version, '-rc.0')
-        run: node ../scripts/prepare-npm-bootstrap.cjs
-      - name: Retain bootstrap package for interactive publication
-        if: endsWith(inputs.version, '-rc.0')
-        uses: actions/upload-artifact@v4
-        with:
-          name: npm-bootstrap-candidate
-          path: |
-            js/veqen-*.tgz
-            js/veqen-*.tgz.sigstore.json
-          if-no-files-found: error
-          retention-days: 7
       - name: Publish stable release with provenance
-        if: ${{ !endsWith(inputs.version, '-rc.0') }}
         run: |
           npm publish --access public --provenance --tag latest

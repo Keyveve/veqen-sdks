@@ -1,4 +1,4 @@
-// npx veqen <init|scan|diff|audit|report> — local, offline-first tooling for AI inference cost.
+// npx @veqen/sdk <init|scan|diff|audit|report> — local, offline-first tooling for AI inference cost.
 import { execFileSync } from "node:child_process";
 import { existsSync, lstatSync, readdirSync, readFileSync } from "node:fs";
 import { extname, join, relative } from "node:path";
@@ -195,9 +195,9 @@ function runInit(dir) {
   const python = read("requirements.txt") + read("pyproject.toml");
   const lines = [];
   if (node) {
-    lines.push("npm install veqen", "");
-    if (/"ai"\s*:/.test(node)) lines.push('import { wrapLanguageModel } from "ai";', 'import { veqen } from "veqen/ai-sdk";', 'const model = wrapLanguageModel({ model: openai("gpt-4o-mini"), middleware: veqen({ feature: "chat" }) });', "");
-    if (/"(openai|@anthropic-ai\/sdk|@google\/genai)"/.test(node)) lines.push('import { wrap, withTags } from "veqen";', "const client = wrap(new OpenAI(), { feature: \"chat\" });", 'await withTags({ customer: org.id }, () => client.chat.completions.create({ ... }));', "");
+    lines.push("npm install @veqen/sdk", "");
+    if (/"ai"\s*:/.test(node)) lines.push('import { wrapLanguageModel } from "ai";', 'import { veqen } from "@veqen/sdk/ai-sdk";', 'const model = wrapLanguageModel({ model: openai("gpt-4o-mini"), middleware: veqen({ feature: "chat" }) });', "");
+    if (/"(openai|@anthropic-ai\/sdk|@google\/genai)"/.test(node)) lines.push('import { wrap, withTags } from "@veqen/sdk";', "const client = wrap(new OpenAI(), { feature: \"chat\" });", 'await withTags({ customer: org.id }, () => client.chat.completions.create({ ... }));', "");
   }
   if (python) {
     const client = /anthropic/i.test(python) && !/\bopenai\b/i.test(python) ? "Anthropic()" : /google-genai/i.test(python) && !/\bopenai\b/i.test(python) ? "genai.Client()" : "OpenAI()";
