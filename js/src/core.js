@@ -173,9 +173,8 @@ async function request(method, path, body) {
   let payload;
   if (body) {
     headers["Content-Type"] = "application/json";
-    headers["Content-Encoding"] = "gzip";
-    const stream = new Blob([JSON.stringify(body)]).stream().pipeThrough(new CompressionStream("gzip"));
-    payload = await new Response(stream).arrayBuffer();
+    // Front Door WAF cannot inspect compressed request bodies.
+    payload = JSON.stringify(body);
   }
   return fetch(state.endpoint + path, { method, headers, body: payload, signal: AbortSignal.timeout(10_000) });
 }
@@ -196,7 +195,19 @@ async function pollBudgets() {
 async function send() {
   if (Date.now() - state.lastPoll >= state.budgetPollMs) await pollBudgets();
   while (state.queue.length) {
-    const batch = state.queue.slice(0, 500);
+    const batch = [];
+    let bytes = 13; // {"events":[]} plus comma separators
+    for (const event of state.queue.slice(0, 500)) {
+      const size = Buffer.byteLength(JSON.stringify(event)) + (batch.length ? 1 : 0);
+      if (bytes + size > 64 * 1024) break;
+      batch.push(event);
+      bytes += size;
+    }
+    if (!batch.length) {
+      console.warn("[veqen] rejected an event exceeding the 64 KiB upload limit; shorten its tags");
+      state.queue.shift();
+      continue;
+    }
     let response;
     try {
       response = await request("POST", "/v1/events", { events: batch });

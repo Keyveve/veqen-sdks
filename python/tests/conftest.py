@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import gzip
 import json
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -35,7 +34,7 @@ def ledger(tmp_path):
 @pytest.fixture
 def server():
     """A local Veqen API that records event batches and serves budget status."""
-    state = NS(events=[], blocked=[], headers=[])
+    state = NS(events=[], blocked=[], headers=[], bodies=[])
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args):
@@ -52,7 +51,8 @@ def server():
         def do_POST(self):
             raw = self.rfile.read(int(self.headers["Content-Length"]))
             state.headers.append(dict(self.headers))
-            state.events.extend(json.loads(gzip.decompress(raw))["events"])
+            state.bodies.append(raw)
+            state.events.extend(json.loads(raw)["events"])
             self._reply({"accepted": 1})
 
         def do_GET(self):

@@ -4,7 +4,6 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { gunzipSync } from "node:zlib";
 import { afterEach, test } from "node:test";
 import { budget, BudgetExceeded, cost, flush, init, lookup, providerForUrl, record, unitRate, withTags, wrap } from "../src/index.js";
 import { veqen as middleware } from "../src/ai-sdk.js";
@@ -194,13 +193,16 @@ test("LangChain.js handler reads standard usage metadata", async () => {
   assert.deepEqual([events()[0].provider, events()[0].input_tokens], ["anthropic", 500]);
 });
 
-test("cloud mode sends gzip batches and enforces shared budgets", async () => {
+test("cloud mode sends JSON batches and enforces shared budgets", async () => {
   const received = [];
   const server = createServer((req, res) => {
     const body = [];
     req.on("data", (c) => body.push(c));
     req.on("end", () => {
-      if (req.method === "POST") received.push(...JSON.parse(gunzipSync(Buffer.concat(body))).events);
+      if (req.method === "POST") {
+        assert.equal(req.headers["content-encoding"], undefined);
+        received.push(...JSON.parse(Buffer.concat(body)).events);
+      }
       res.setHeader("Content-Type", "application/json");
       res.end(JSON.stringify(req.method === "GET" ? { blocked: [{ scope: "customer", value: "acme", limit_usd: 5 }] } : { accepted: 1 }));
     });
@@ -298,4 +300,39 @@ test("an unwritable ledger and warn budgets never break calls", async () => {
     console.warn = warn;
   }
   assert.ok(warnings.some((w) => w.includes("budget reached")));
+});
+
+
+test("cloud batches stay within the edge byte limit and preserve Unicode events", async () => {
+  const received = [], sizes = [];
+  const server = createServer((req, res) => {
+    const chunks = [];
+    req.on("data", c => chunks.push(c));
+    req.on("end", () => {
+      if (req.method === "POST") {
+        const body = Buffer.concat(chunks);
+        assert.equal(req.headers["content-encoding"], undefined);
+        sizes.push(body.length);
+        received.push(...JSON.parse(body).events);
+      }
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify(req.method === "GET" ? {blocked: []} : {accepted: 1}));
+    });
+  });
+  await new Promise(r => server.listen(0, r));
+  try {
+    init({apiKey: "vq_live_test", endpoint: `http://127.0.0.1:${server.address().port}`, flushIntervalMs: 60000});
+    const expected = Array.from({length: 80}, () => record("openai", "gpt-4o", {inputTokens: 1}, {tags: {note: "🧪".repeat(600)}}));
+    assert.equal(await flush(), true);
+    assert.deepEqual(received, expected);
+    assert.ok(sizes.length > 1);
+    assert.ok(sizes.every(size => size <= 64 * 1024));
+    record("openai", "gpt-4o", {inputTokens: 1}, {tags: {note: "x".repeat(65536)}});
+    const valid = record("openai", "gpt-4o", {inputTokens: 1});
+    assert.equal(await flush(), true);
+    assert.equal(received.length, expected.length + 1);
+    assert.deepEqual(received.at(-1), valid);
+  } finally {
+    server.close();
+  }
 });

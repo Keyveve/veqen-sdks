@@ -1,14 +1,13 @@
 """Recording calls: tags, budgets, the local ledger and the background sender.
 
 Nothing here runs in your request path except an in-memory budget check and a queue append.
-Events are sent in gzip batches from one daemon thread; send failures never raise into your code.
+Events are sent in size-limited JSON batches from one daemon thread; send failures never raise into your code.
 """
 
 from __future__ import annotations
 
 import atexit
 import contextvars
-import gzip
 import json
 import logging
 import os
@@ -202,15 +201,30 @@ class _Client:
     def _request(self, method: str, path: str, body: bytes | None = None) -> dict:
         headers = {"Authorization": f"Bearer {self.api_key}", "User-Agent": "veqen-python/1.0"}
         if body is not None:
-            headers |= {"Content-Type": "application/json", "Content-Encoding": "gzip"}
+            headers["Content-Type"] = "application/json"
         request = urllib.request.Request(self.endpoint + path, data=body, headers=headers, method=method)
         with urllib.request.urlopen(request, timeout=10) as response:  # noqa: S310 - configured endpoint
             return json.loads(response.read() or b"{}")
 
     def _send(self) -> None:
         while self.queue:
-            batch = [self.queue[i] for i in range(min(500, len(self.queue)))]
-            body = gzip.compress(json.dumps({"events": batch}).encode())
+            # Front Door WAF cannot inspect gzip; keep JSON below its body limit.
+            batch, encoded = [], []
+            size = 13  # {"events":[]} plus comma separators
+            for i in range(min(500, len(self.queue))):
+                event = self.queue[i]
+                data = json.dumps(event, ensure_ascii=False, separators=(",", ":")).encode()
+                next_size = size + len(data) + bool(batch)
+                if next_size > 64 * 1024:
+                    break
+                batch.append(event)
+                encoded.append(data)
+                size = next_size
+            if not batch:
+                log.warning("Veqen rejected an event exceeding the 64 KiB upload limit; shorten its tags")
+                self.queue.popleft()
+                continue
+            body = b'{"events":[' + b",".join(encoded) + b"]}"
             for attempt in range(4):
                 try:
                     self._request("POST", "/v1/events", body)
