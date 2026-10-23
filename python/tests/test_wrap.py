@@ -176,11 +176,12 @@ def test_wrap_rejects_unknown_clients():
         veqen.wrap(object())
 
 
-def test_cloud_mode_sends_gzip_batches_and_enforces_shared_budgets(server):
+def test_cloud_mode_sends_json_batches_and_enforces_shared_budgets(server):
     veqen.init(api_key="vq_live_test", endpoint=server.url, budget_poll=0)
     veqen.record("gpt-4o", input_tokens=10, output_tokens=5, customer="acme")
     assert veqen.flush(5)
     assert server.events[0]["customer"] == "acme" and server.headers[0]["Authorization"] == "Bearer vq_live_test"
+    assert "Content-Encoding" not in server.headers[0]
     server.blocked.append({"scope": "customer", "value": "acme", "limit_usd": 5.0})
     client._poll_budgets()
     with pytest.raises(veqen.BudgetExceeded), veqen.tags(customer="acme"):
@@ -204,3 +205,32 @@ def test_warn_budgets_log_once_and_never_block(ledger, caplog):
     for _ in range(3):
         wrapped.chat.completions.create(model="gpt-4o", messages=[])
     assert len(ledger()) == 3 and caplog.text.count("budget reached") == 1
+
+
+def test_cloud_batches_fit_edge_limit_without_losing_unicode_events(server):
+    from veqen.client import _Client
+
+    sender = _Client()
+    sender.api_key = "vq_live_test"
+    sender.endpoint = server.url
+    events = [{"id": str(i), "tags": {"note": "🧪" * 600}} for i in range(80)]
+    sender.queue.extend(events)
+    sender._send()
+    assert list(sender.queue) == []
+    assert server.events == events
+    assert len(server.bodies) > 1
+    assert all(len(body) <= 64 * 1024 for body in server.bodies)
+    assert all("Content-Encoding" not in header for header in server.headers)
+
+
+def test_oversized_event_does_not_block_later_events(server, caplog):
+    from veqen.client import _Client
+
+    sender = _Client()
+    sender.api_key = "vq_live_test"
+    sender.endpoint = server.url
+    sender.queue.extend([{"id": "too-large", "tags": {"note": "x" * 65536}}, {"id": "valid"}])
+    sender._send()
+    assert server.events == [{"id": "valid"}]
+    assert not sender.queue
+    assert "64 KiB" in caplog.text

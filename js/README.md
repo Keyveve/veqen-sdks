@@ -25,7 +25,7 @@ Every call is priced from the usage the provider reports, with cached input, cac
 - **Vercel AI SDK** middleware: `import { veqen } from "@veqen/sdk/ai-sdk"` and `wrapLanguageModel({ model, middleware: veqen() })`.
 - **LangChain.js**: `import { VeqenCallbackHandler } from "@veqen/sdk/langchain"`.
 - **Budgets**: `budget(5, { customer: "*" })` throws `BudgetExceeded` before subsequent wrapped calls once recorded spend reaches the limit.
-- **Price** without recording: `cost("gpt-4o", { inputTokens: 1000, outputTokens: 500 })`; the price book is `veqen/prices`.
+- **Price** without recording: `cost("gpt-4o", { inputTokens: 1000, outputTokens: 500 })`; the price book is `@veqen/sdk/prices`.
 
 ## CLI
 
