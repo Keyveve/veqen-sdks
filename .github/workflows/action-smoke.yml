@@ -1,0 +1,23 @@
+name: Published Action smoke test
+on:
+  pull_request:
+    paths: ['action.yml', 'github-action/**', '.github/workflows/action-smoke.yml', 'examples/action-smoke/**']
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with: {fetch-depth: 0}
+      - uses: Keyveve/veqen-sdks@a0eb12048df0242d32de93694282c29a1119d85c # v1.1.0
+      - name: Verify review output
+        shell: bash
+        run: |
+          test -s "$RUNNER_TEMP/veqen-review.md"
+          grep -q '<!-- veqen-cost-review -->' "$RUNNER_TEMP/veqen-review.md"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: published-action-review
+          path: ${{ runner.temp }}/veqen-review.md
