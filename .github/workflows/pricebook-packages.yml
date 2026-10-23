@@ -7,7 +7,12 @@ on:
       publish:
         type: boolean
         default: false
-        description: Publish reviewed snapshot to PyPI
+        description: Publish reviewed snapshot to the selected registry
+      registry:
+        type: choice
+        default: pypi
+        options: [pypi, npm]
+        description: Package registry
       version:
         type: string
         description: Exact package version, required when publishing
@@ -41,7 +46,7 @@ jobs:
           path: pricebook-packages/js/*.tgz
   publish:
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.publish
+    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.publish && inputs.registry == 'pypi'
     runs-on: ubuntu-latest
     environment: pypi-pricebook
     permissions:
@@ -55,3 +60,27 @@ jobs:
         run: |
           python -c "import os,pathlib,zipfile,email; w,=pathlib.Path('dist').glob('*.whl'); z=zipfile.ZipFile(w); m,=[n for n in z.namelist() if n.endswith('/METADATA')]; assert email.message_from_bytes(z.read(m))['Version']==os.environ['RELEASE_VERSION']"
       - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086
+  publish-npm:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.publish && inputs.registry == 'npm'
+    runs-on: ubuntu-latest
+    environment: npm-pricebook
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+      - run: npm install --global npm@11.21.0 --ignore-scripts
+      - uses: actions/download-artifact@v4
+        with: {name: pricebook-npm, path: dist}
+      - name: Check approved package and version
+        env: {RELEASE_VERSION: '${{ inputs.version }}'}
+        run: |
+          tar -xzf dist/*.tgz package/package.json
+          node -e "const p=JSON.parse(require('fs').readFileSync('package/package.json','utf8')); if (p.name !== '@veqen/pricebook' || p.version !== process.env.RELEASE_VERSION) process.exit(1)"
+      - name: Publish reviewed artifact with provenance
+        run: npm publish dist/*.tgz --access public --provenance --tag latest --ignore-scripts
