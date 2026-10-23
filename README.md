@@ -22,7 +22,7 @@ Python 3.10+, no runtime dependencies. See [Python documentation](python/README.
 ## JavaScript and TypeScript
 
 ```sh
-npm install veqen@^1
+npm install @veqen/sdk@^1
 ```
 
 ```javascript
@@ -39,10 +39,10 @@ Node.js 20+, ESM, TypeScript declarations, no runtime dependencies. See [JavaScr
 ## Free CLI and pull-request reviews
 
 ```sh
-npx veqen@1 scan
-npx veqen@1 diff origin/main
-npx veqen@1 audit
-npx veqen@1 report
+npx @veqen/sdk@1 scan
+npx @veqen/sdk@1 diff origin/main
+npx @veqen/sdk@1 audit
+npx @veqen/sdk@1 report
 ```
 
 Scan model references for prices and retirement dates, compare model changes, import provider usage locally with your admin key, or report on a local ledger. The [cost-review Action](github-action/README.md) adds a pull-request summary and optional retirement checks. It never executes the reviewed application's code. Use `pull_request`, not `pull_request_target`.

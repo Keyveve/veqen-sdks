@@ -44,8 +44,8 @@ runs:
         set -euo pipefail
         CLI_DIR=$(mktemp -d "$RUNNER_TEMP/veqen-cli.XXXXXX")
         cd "$CLI_DIR"
-        npm install --prefix "$CLI_DIR" --registry https://registry.npmjs.org --ignore-scripts --no-audit --no-fund --package-lock=false veqen@1
-        echo "VEQEN_REVIEW_CLI=$CLI_DIR/node_modules/veqen/bin/veqen.js" >> "$GITHUB_ENV"
+        npm install --prefix "$CLI_DIR" --registry https://registry.npmjs.org --ignore-scripts --no-audit --no-fund --package-lock=false @veqen/sdk@1
+        echo "VEQEN_REVIEW_CLI=$CLI_DIR/node_modules/@veqen/sdk/bin/veqen.js" >> "$GITHUB_ENV"
 
     - name: Review model changes
       if: github.event_name == 'pull_request'

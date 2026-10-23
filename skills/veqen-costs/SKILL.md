@@ -7,12 +7,12 @@ description: Add AI cost tracking to a codebase with Veqen (wrap OpenAI, Anthrop
 
 ## Adding Veqen to code
 
-1. Detect the language and AI clients in use (`openai`, `anthropic`, `@anthropic-ai/sdk`, `google-genai`, `@google/genai`, the Vercel AI SDK `ai`, LangChain, LiteLLM, the OpenAI Agents SDK). OpenAI clients pointed at Together, Fireworks, Groq, Azure AI Foundry or another compatible host are priced as that host; for your own servers pass `provider="self-hosted"` to `wrap`. `npx veqen init` prints the setup for the current project.
-2. Install: `pip install veqen` (`veqen[langchain]` for LangChain) or `npm install veqen`.
+1. Detect the language and AI clients in use (`openai`, `anthropic`, `@anthropic-ai/sdk`, `google-genai`, `@google/genai`, the Vercel AI SDK `ai`, LangChain, LiteLLM, the OpenAI Agents SDK). OpenAI clients pointed at Together, Fireworks, Groq, Azure AI Foundry or another compatible host are priced as that host; for your own servers pass `provider="self-hosted"` to `wrap`. `npx @veqen/sdk init` prints the setup for the current project.
+2. Install: `pip install veqen` (`veqen[langchain]` for LangChain) or `npm install @veqen/sdk`.
 3. Wrap each client where it's created and name the feature:
    - Python: `client = veqen.wrap(OpenAI(), feature="support-bot")`
    - TypeScript: `const client = wrap(new OpenAI(), { feature: "support-bot" })`
-   - Vercel AI SDK: `wrapLanguageModel({ model, middleware: veqen({ feature: "chat" }) })` from `veqen/ai-sdk`
+   - Vercel AI SDK: `wrapLanguageModel({ model, middleware: veqen({ feature: "chat" }) })` from `@veqen/sdk/ai-sdk`
 4. Set the customer and user (or, for internal and research work, the `project`) once per request, at the framework's middleware or request handler, not at each call:
    - Python: `with veqen.tags(customer=org_id, user=user_id): ...`
    - TypeScript: `withTags({ customer: org.id, user: user.id }, () => ...)`

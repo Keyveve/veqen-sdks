@@ -27,7 +27,7 @@ Every call is priced from the usage the provider reports, with the rules provide
 - **Price** without recording: `veqen.cost("gpt-4o", 1000, 500)` returns `0.0075`.
 - **Integrations**: `veqen.integrations.langchain`, `veqen.integrations.litellm`, `veqen.integrations.openai_agents`.
 
-In serverless functions, call `veqen.flush()` before returning. Write a local ledger with `veqen.init(ledger_file=".veqen/ledger.jsonl")` and see cost per customer, feature and model with `npx veqen report`. Set `VEQEN_API_KEY` to send calls to the [Veqen dashboard](https://veqen-app.com/signup?utm_source=python-sdk&utm_medium=package&utm_campaign=launch-v1) for shared budgets, reconciliation with your provider bills, custom and self-hosted prices, margin per customer and month-end journal entries. Free for 60,000 tracked calls a month.
+In serverless functions, call `veqen.flush()` before returning. Write a local ledger with `veqen.init(ledger_file=".veqen/ledger.jsonl")` and see cost per customer, feature and model with `npx @veqen/sdk report`. Set `VEQEN_API_KEY` to send calls to the [Veqen dashboard](https://veqen-app.com/signup?utm_source=python-sdk&utm_medium=package&utm_campaign=launch-v1) for shared budgets, reconciliation with your provider bills, custom and self-hosted prices, margin per customer and month-end journal entries. Free for 60,000 tracked calls a month.
 
 Docs: https://veqen-app.com/docs/python · Model prices: https://veqen-app.com/models · MIT licensed.
 

@@ -73,7 +73,7 @@ export declare function priceCall(price: Price, usage: Usage, options?: CostOpti
 export declare function unitRate(price: Price, variant?: string): number | null;
 export declare function providerForUrl(url: string): string | null;
 export declare const priceBook: { version: string; providers: Record<string, { name: string; group: string; pricing_url: string }>; models: Record<string, Omit<Price, "key" | "provider" | "model">> };
-/** Vercel AI SDK middleware (import from "veqen/ai-sdk"). */
+/** Vercel AI SDK middleware (import from "@veqen/sdk/ai-sdk"). */
 export declare function veqen(defaults?: Tags): { wrapGenerate: (...args: any[]) => Promise<any>; wrapStream: (...args: any[]) => Promise<any> };
-/** LangChain.js callback handler (import from "veqen/langchain"). */
+/** LangChain.js callback handler (import from "@veqen/sdk/langchain"). */
 export declare class VeqenCallbackHandler { constructor(tags?: Tags); }
