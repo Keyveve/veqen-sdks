@@ -6,7 +6,7 @@ The cost ledger for AI inference. Usage-based cost for supported model calls (te
 pip install veqen
 ```
 
-Python 3.10+, no dependencies in the base package, works offline. Optional integrations: `veqen[langchain]` and `veqen[litellm]`.
+Python 3.10+, no dependencies in the base package, works offline. Optional integrations: `veqen[langchain]`, `veqen[litellm]` and `veqen[haystack]`.
 
 ```python
 import veqen
@@ -25,7 +25,7 @@ Every call is priced from the usage the provider reports, with the rules provide
 - **Budget**: `veqen.budget(5.00, customer="*")` raises `veqen.BudgetExceeded` before subsequent wrapped calls once recorded spend reaches the limit.
 - **Record** anything else: `veqen.record("claude-sonnet-5-5", provider="anthropic", input_tokens=1200, output_tokens=300)`, or by unit for media models: `veqen.record("veo-3.1-generate-001", provider="google", units=8, variant="1080p")`.
 - **Price** without recording: `veqen.cost("gpt-4o", 1000, 500)` returns `0.0075`.
-- **Integrations**: `veqen.integrations.langchain`, `veqen.integrations.litellm`, `veqen.integrations.openai_agents`.
+- **Integrations**: `veqen.integrations.langchain`, `veqen.integrations.litellm`, `veqen.integrations.openai_agents`, and the [Haystack chat-cost component](https://github.com/Keyveve/veqen-sdks/tree/main/examples/haystack).
 
 In serverless functions, call `veqen.flush()` before returning. Write a local ledger with `veqen.init(ledger_file=".veqen/ledger.jsonl")` and see cost per customer, feature and model with `npx @veqen/sdk report`. Set `VEQEN_API_KEY` to send calls to the [Veqen dashboard](https://veqen-app.com/signup?utm_source=python-sdk&utm_medium=package&utm_campaign=launch-v1) for shared budgets, reconciliation with your provider bills, custom and self-hosted prices, margin per customer and month-end journal entries. Free for 60,000 tracked calls a month.
 
