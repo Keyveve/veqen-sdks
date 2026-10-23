@@ -6,7 +6,7 @@ The cost ledger for AI inference. Usage-based cost for supported model calls (te
 pip install veqen
 ```
 
-Python 3.10+, no dependencies (LangChain support is the `veqen[langchain]` extra), works offline.
+Python 3.10+, no dependencies in the base package, works offline. Optional integrations: `veqen[langchain]` and `veqen[litellm]`.
 
 ```python
 import veqen
@@ -30,5 +30,20 @@ Every call is priced from the usage the provider reports, with the rules provide
 In serverless functions, call `veqen.flush()` before returning. Write a local ledger with `veqen.init(ledger_file=".veqen/ledger.jsonl")` and see cost per customer, feature and model with `npx @veqen/sdk report`. Set `VEQEN_API_KEY` to send calls to the [Veqen dashboard](https://veqen-app.com/signup?utm_source=python-sdk&utm_medium=package&utm_campaign=launch-v1) for shared budgets, reconciliation with your provider bills, custom and self-hosted prices, margin per customer and month-end journal entries. Free for 60,000 tracked calls a month.
 
 Docs: https://veqen-app.com/docs/python · Model prices: https://veqen-app.com/models · MIT licensed.
+
+## LiteLLM
+
+Install `pip install 'veqen[litellm]>=1.1.0'`, then register the supported `CustomLogger`:
+
+```python
+import litellm
+import veqen
+from veqen.integrations.litellm_logger import VeqenLogger
+
+veqen.init()  # optional VEQEN_API_KEY for the hosted ledger
+litellm.callbacks = [VeqenLogger()]
+```
+
+Pass attribution as `metadata={"veqen": {"customer": "acme", "feature": "chat"}}` on a LiteLLM call. The logger copies allowlisted cost metadata, not prompts or responses. It observes completed calls and does not enforce pre-call budgets. Register only one Veqen recording path per request. See the [LiteLLM guide](https://veqen-app.com/docs/litellm) for proxy configuration and the hosted logging endpoint.
 
 Budgets are not guaranteed spending caps. In-flight and concurrent calls can exceed the limit. Local counters are per process and reset on restart; dashboard budgets also depend on ingestion and polling delays.
