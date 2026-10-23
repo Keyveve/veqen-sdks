@@ -1,0 +1,24 @@
+name: Haystack integration
+on:
+  pull_request:
+    paths: ['python/**', '.github/workflows/haystack.yml']
+  push:
+    branches: [main]
+    paths: ['python/**', '.github/workflows/haystack.yml']
+permissions:
+  contents: read
+jobs:
+  haystack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python: ['3.11', '3.13']
+    env:
+      HAYSTACK_TELEMETRY_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '${{ matrix.python }}'}
+      - run: python -m pip install -e 'python[haystack]' pytest
+      - run: python -m pytest python/tests/test_haystack.py -q
