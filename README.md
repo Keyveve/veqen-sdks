@@ -27,7 +27,7 @@ npm install @veqen/sdk@^1
 
 ```javascript
 import OpenAI from "openai";
-import { wrap, withTags } from "veqen";
+import { wrap, withTags } from "@veqen/sdk";
 
 const client = wrap(new OpenAI(), { feature: "support-bot" });
 await withTags({ customer: "acme" }, () =>
@@ -57,11 +57,11 @@ No account or network reporting is required for local cost tracking. Set `VEQEN_
 
 ## Agent integration
 
-Connect to `https://veqen-app.com/mcp` using OAuth or a Veqen API key. Root `plugin.json`, `mcp.json` and [skills](skills/) describe the agent integration. See [connection instructions](https://veqen-app.com/ai-agents).
+Connect to `https://veqen-app.com/mcp` using OAuth or a Veqen API key. Root `plugin.json`, `mcp.json` and [skills](skills/) describe the agent integration. See [connection instructions](https://veqen-app.com/docs/mcp).
 
 ## Migrating from 0.x
 
-Version 1 is a different product and a breaking API change. The old `Veqen().signup(...)` risk-check client and `@veqen/sdk` JavaScript package are not compatible with these APIs. Remove those integrations before upgrading; the retired signup-check endpoints must not be used for new implementations. The historical `data/` blocklist remains for attribution and compatibility, but is no longer refreshed here.
+Version 1 is a different product and a breaking API change. The old `Veqen().signup(...)` risk-check client and 0.x versions of the `@veqen/sdk` JavaScript package are not compatible with these APIs. Remove those integrations before upgrading; the retired signup-check endpoints must not be used for new implementations. The historical `data/` blocklist remains for attribution and compatibility, but is no longer refreshed here.
 
 ## Development
 
