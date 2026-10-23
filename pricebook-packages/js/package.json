@@ -1,0 +1,40 @@
+{
+  "name": "@veqen/pricebook",
+  "version": "2026.10.22",
+  "description": "Dated AI model prices, cache rates and billing rules. Offline, with no tracking dependencies.",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./prices.json": "./prices.json"
+  },
+  "files": [
+    "index.js",
+    "prices.json",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES"
+  ],
+  "license": "MIT",
+  "homepage": "https://veqen-app.com/docs/price-book",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Keyveve/veqen-sdks.git",
+    "directory": "pricebook-packages/js"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "pricing",
+    "cost",
+    "openai",
+    "anthropic",
+    "pricebook"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test test.mjs"
+  }
+}

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "veqen-pricebook"
+version = "2026.10.22"
+description = "Dated AI model prices, cache rates and billing rules, with no tracking dependencies."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES"]
+authors = [{name = "Keyveve, Inc."}]
+keywords = ["ai", "llm", "pricing", "cost", "pricebook"]
+
+[project.urls]
+Homepage = "https://veqen-app.com/docs/price-book"
+Repository = "https://github.com/Keyveve/veqen-sdks"
+Documentation = "https://veqen-app.com/docs/price-book"
+
+[tool.setuptools.packages.find]
+include = ["veqen_pricebook*"]
+
+[tool.setuptools.package-data]
+veqen_pricebook = ["prices.json"]
