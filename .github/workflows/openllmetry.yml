@@ -1,0 +1,31 @@
+name: OpenLLMetry Collector example
+on:
+  pull_request:
+    paths: ['examples/openllmetry/**', '.github/workflows/openllmetry.yml']
+  push:
+    branches: [main]
+    paths: ['examples/openllmetry/**', '.github/workflows/openllmetry.yml']
+permissions:
+  contents: read
+jobs:
+  collector:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Download pinned official Collector and verify checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.163.2
+          file=otelcol-contrib_0.163.2_linux_amd64.tar.gz
+          curl --fail --location --silent --show-error "$base/$file" --output "$file"
+          curl --fail --location --silent --show-error "$base/$file.sha256" --output "$file.sha256"
+          expected=$(tr -d '\r\n' < "$file.sha256")
+          test "${#expected}" -eq 64
+          test "$(sha256sum "$file" | cut -d ' ' -f1)" = "$expected"
+          tar -xzf "$file" otelcol-contrib
+      - name: Verify usage, attribution and filtering through real Collector
+        run: python examples/openllmetry/test_collector.py "$PWD/otelcol-contrib"

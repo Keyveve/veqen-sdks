@@ -1,0 +1,46 @@
+# Tested with OpenTelemetry Collector Contrib 0.163.2.
+# Keep the receiver private; this loopback example shares the app's host.
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 127.0.0.1:4318
+processors:
+  filter/usage:
+    error_mode: propagate
+    trace_conditions:
+      - context: span
+        conditions:
+          - 'span.attributes["gen_ai.usage.input_tokens"] == nil and span.attributes["gen_ai.usage.output_tokens"] == nil'
+      - context: spanevent
+        conditions: ['true']
+  transform/cost:
+    error_mode: propagate
+    trace_statements:
+      - set(span.attributes["veqen.customer"], resource.attributes["veqen.customer"]) where span.attributes["veqen.customer"] == nil
+      - set(span.attributes["veqen.feature"], resource.attributes["veqen.feature"]) where span.attributes["veqen.feature"] == nil
+      - set(span.attributes["veqen.user"], resource.attributes["veqen.user"]) where span.attributes["veqen.user"] == nil
+      - set(span.attributes["veqen.project"], resource.attributes["veqen.project"]) where span.attributes["veqen.project"] == nil
+      - set(span.attributes["veqen.environment"], resource.attributes["veqen.environment"]) where span.attributes["veqen.environment"] == nil
+      - set(span.attributes["gen_ai.openai.response.service_tier"], span.attributes["openai.response.service_tier"]) where span.attributes["gen_ai.openai.response.service_tier"] == nil
+      - keep_keys(span.attributes, ["gen_ai.provider.name", "gen_ai.system", "gen_ai.request.model", "gen_ai.response.model", "gen_ai.usage.input_tokens", "gen_ai.usage.output_tokens", "gen_ai.usage.cache_read.input_tokens", "gen_ai.usage.cache_creation.input_tokens", "gen_ai.openai.response.service_tier", "veqen.customer", "veqen.feature", "veqen.user", "veqen.project", "veqen.environment"])
+      - keep_keys(resource.attributes, ["service.name", "veqen.customer", "veqen.feature", "veqen.user", "veqen.project", "veqen.environment"])
+      - keep_keys(scope.attributes, [])
+      - set(span.name, "gen_ai.request")
+      - set(span.status.message, "")
+      - set(span.trace_state, "")
+  batch:
+    timeout: 1s
+    send_batch_size: 100
+exporters:
+  otlp_http/veqen:
+    endpoint: https://veqen-app.com/v1/otlp
+    encoding: json
+    headers:
+      Authorization: Bearer ${env:VEQEN_API_KEY}
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [filter/usage, transform/cost, batch]
+      exporters: [otlp_http/veqen]

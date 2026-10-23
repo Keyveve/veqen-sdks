@@ -57,6 +57,8 @@ No account or network reporting is required for local cost tracking. Set `VEQEN_
 
 ## Agent integration
 
+Already using OpenLLMetry? Follow the tested [Collector setup](examples/openllmetry/) to export GenAI usage to Veqen with customer and feature attribution.
+
 Connect to `https://veqen-app.com/mcp` using OAuth or a Veqen API key. Root `plugin.json`, `mcp.json` and [skills](skills/) describe the agent integration. See [connection instructions](https://veqen-app.com/docs/mcp).
 
 ## Migrating from 0.x
