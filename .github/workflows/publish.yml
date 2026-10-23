@@ -60,6 +60,9 @@ jobs:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
+      # Staged publishing supports the interactive approval required for a
+      # new package, before npm allows its trusted publisher to be configured.
+      - run: npm install --global npm@11.21.0 --ignore-scripts
       - run: npm ci --ignore-scripts
       - name: Validate version and test
         run: |
@@ -70,11 +73,13 @@ jobs:
           npm test
       - name: Publish with provenance
         run: |
-          TAG=latest
-          if [[ "$RELEASE_VERSION" == *-rc.0 ]]; then TAG=next; fi
-          npm publish --access public --provenance --tag "$TAG"
+          if [[ "$RELEASE_VERSION" == *-rc.0 ]]; then
+            npm stage publish --access public --provenance --tag next
+          else
+            npm publish --access public --provenance --tag latest
+          fi
         env:
-          # First publication establishes the package before npm permits a
-          # trusted publisher. Remove this optional secret after bootstrap;
+          # Staging the first candidate defers human 2FA to npm stage approve.
+          # Remove this optional secret after approving the candidate;
           # subsequent releases authenticate through the OIDC permission above.
           NODE_AUTH_TOKEN: ${{ secrets.NPM_BOOTSTRAP_TOKEN }}
