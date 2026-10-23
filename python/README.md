@@ -6,7 +6,7 @@ The cost ledger for AI inference. Usage-based cost for supported model calls (te
 pip install veqen
 ```
 
-Python 3.10+, no dependencies in the base package, works offline. Optional integrations: `veqen[langchain]`, `veqen[litellm]` and `veqen[haystack]`.
+Python 3.10+, no dependencies in the base package, works offline. Optional integrations: `veqen[langchain]`, `veqen[litellm]` and `veqen[haystack]` (Python 3.11+ for Haystack).
 
 ```python
 import veqen

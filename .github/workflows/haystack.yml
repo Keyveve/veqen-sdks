@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        python: ['3.10', '3.13']
+        python: ['3.11', '3.13']
     env:
       HAYSTACK_TELEMETRY_ENABLED: 'false'
     steps:

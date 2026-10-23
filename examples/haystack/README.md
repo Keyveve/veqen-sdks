@@ -7,7 +7,7 @@ pip install 'veqen[haystack]>=1.2,<2'
 export HAYSTACK_TELEMETRY_ENABLED=false
 ```
 
-Requires Python 3.10+ and Haystack 3.4+. The base Veqen SDK still has no dependencies; Haystack is optional.
+Requires Python 3.11+ and Haystack 3.4+. The base Veqen SDK still has no dependencies; Haystack is optional.
 
 ```python
 import veqen
