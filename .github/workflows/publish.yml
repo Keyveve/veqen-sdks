@@ -63,9 +63,16 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Validate version and test
         run: |
-          node -e "if (JSON.parse(require('fs').readFileSync('package.json','utf8')).version !== process.env.RELEASE_VERSION) process.exit(1)"
+          node -e "const v=JSON.parse(require('fs').readFileSync('package.json','utf8')).version; if (![v,v+'-rc.0'].includes(process.env.RELEASE_VERSION)) process.exit(1)"
+          # A candidate establishes a new npm package before trusted publishing
+          # can be configured. The stable version then validates the OIDC trust.
+          npm version "$RELEASE_VERSION" --no-git-tag-version --ignore-scripts --allow-same-version
           npm test
-      - run: npm publish --access public --provenance
+      - name: Publish with provenance
+        run: |
+          TAG=latest
+          if [[ "$RELEASE_VERSION" == *-rc.0 ]]; then TAG=next; fi
+          npm publish --access public --provenance --tag "$TAG"
         env:
           # First publication establishes the package before npm permits a
           # trusted publisher. Remove this optional secret after bootstrap;
