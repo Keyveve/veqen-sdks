@@ -23,7 +23,9 @@ jobs:
           file=otelcol-contrib_0.163.2_linux_amd64.tar.gz
           curl --fail --location --silent --show-error "$base/$file" --output "$file"
           curl --fail --location --silent --show-error "$base/$file.sha256" --output "$file.sha256"
-          sha256sum --check "$file.sha256"
+          expected=$(tr -d '\r\n' < "$file.sha256")
+          test "${#expected}" -eq 64
+          test "$(sha256sum "$file" | cut -d ' ' -f1)" = "$expected"
           tar -xzf "$file" otelcol-contrib
       - name: Verify usage, attribution and filtering through real Collector
         run: python examples/openllmetry/test_collector.py "$PWD/otelcol-contrib"
