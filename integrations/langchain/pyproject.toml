@@ -1,0 +1,23 @@
+[project]
+name = "langchain-veqen"
+version = "1.0.0"
+description = "LangChain and LangGraph callback for AI usage costs, customer attribution and Veqen budgets."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = ["veqen>=1.1.0,<2", "langchain-core>=0.3,<2"]
+keywords = ["langchain", "langgraph", "ai cost", "token usage", "budget"]
+
+[project.urls]
+Homepage = "https://veqen-app.com"
+Documentation = "https://veqen-app.com/docs/langchain"
+Source = "https://github.com/Keyveve/veqen-sdks/tree/main/integrations/langchain"
+Issues = "https://github.com/Keyveve/veqen-sdks/issues"
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["langchain_veqen*"]
