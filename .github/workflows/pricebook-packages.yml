@@ -83,4 +83,4 @@ jobs:
           tar -xzf dist/*.tgz package/package.json
           node -e "const p=JSON.parse(require('fs').readFileSync('package/package.json','utf8')); if (p.name !== '@veqen/pricebook' || p.version !== process.env.RELEASE_VERSION) process.exit(1)"
       - name: Publish reviewed artifact with provenance
-        run: npm publish dist/*.tgz --access public --provenance --tag latest --ignore-scripts
+        run: npm publish ./dist/*.tgz --access public --provenance --tag latest --ignore-scripts
