@@ -1,7 +1,7 @@
 [project]
 name = "veqen"
-version = "1.3.0"
-description = "The cost ledger for AI inference: exact cost for every model call (text, embeddings, images, video, speech and transcription, across labs, open-model hosts and clouds), per customer, feature and project, with budgets."
+version = "1.3.1"
+description = "Scale AI inference without losing track of the bill. Track what AI requests cost by customer, feature or project."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"

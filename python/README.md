@@ -1,6 +1,6 @@
 # veqen
 
-The cost ledger for AI inference. Usage-based cost for supported model calls (text, embeddings, images, video, speech and transcription, from about 2,000 models across labs, open-model hosts and clouds), attributed to the customer, feature, user or project that caused it, with budgets that check recorded spend before each wrapped request.
+Scale AI inference without losing track of the bill. Veqen shows what your AI requests cost and who they were for: a customer, a feature or a project. Start locally without an account, then connect the optional dashboard to see where spending goes and compare it with your provider bills.
 
 ```bash
 pip install veqen

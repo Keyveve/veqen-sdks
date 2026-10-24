@@ -1,7 +1,7 @@
 {
   "name": "@veqen/sdk",
-  "version": "1.1.0",
-  "description": "The cost ledger for AI inference: exact cost for every model call (text, embeddings, images, video, speech and transcription, across labs, open-model hosts and clouds), per customer, feature and project, with budgets. Includes the `veqen` CLI.",
+  "version": "1.1.1",
+  "description": "Scale AI inference without losing track of the bill. Track what AI requests cost by customer, feature or project. Includes the veqen CLI.",
   "type": "module",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",

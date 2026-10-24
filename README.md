@@ -4,7 +4,7 @@ Veqen shows what your AI requests cost and who they were for: a customer, a feat
 
 ## Veqen 1.5 compatibility
 
-Python SDK 1.3.0 and JavaScript SDK 1.1.0 add agent-run attribution and correct billing-host attribution for Azure, Bedrock, Vertex and OpenRouter. Python also adds a LlamaIndex event handler. SDK and cloud versions are independent. [Release notes](https://veqen-app.com/docs/whats-new).
+Python SDK 1.3.1 and JavaScript SDK 1.1.1 include agent-run attribution and correct billing-host attribution for Azure, Bedrock, Vertex and OpenRouter. Python also adds a LlamaIndex event handler. SDK and cloud versions are independent. [Release notes](https://veqen-app.com/docs/whats-new).
 
 ## Python
 
