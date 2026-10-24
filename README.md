@@ -61,6 +61,10 @@ No account or network reporting is required for local cost tracking. Set `VEQEN_
 
 ## Agent integration
 
+Try the [Next.js / Vercel AI SDK cost starter](examples/vercel-ai-cost-starter/) for a deployable response-and-receipt example. Its default demo needs no API keys and makes no inference requests. [Veqen AI Cost Lens](vscode-extension/) adds offline model-price hovers and a local model inventory to VS Code; build its VSIX from source or download the CI artifact. Marketplace publication is tracked separately from the source release.
+
+The [Veqen Pricing plugin package](plugins/veqen-pricing/) exposes only the four public read-only pricing tools. The package is prepared for directory review; this repository does not imply directory approval.
+
 Already using OpenLLMetry? Follow the tested [Collector setup](examples/openllmetry/) to export GenAI usage to Veqen with customer and feature attribution.
 
 Connect to `https://veqen-app.com/mcp` using OAuth or a full-access Veqen API key. Root `plugin.json`, `mcp.json` and [skills](skills/) describe the agent integration. The public `https://veqen-app.com/mcp/prices` server needs no sign-in and offers model prices, comparisons and workload simulation. See [connection instructions](https://veqen-app.com/docs/mcp) and [agent documentation](https://veqen-app.com/docs/agents).

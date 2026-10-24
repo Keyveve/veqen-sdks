@@ -1,0 +1,87 @@
+{
+  "name": "veqen-cost-lens",
+  "displayName": "Veqen AI Cost Lens",
+  "description": "Offline AI model price hovers and a local workspace model inventory. No account or telemetry.",
+  "version": "0.1.0",
+  "publisher": "Keyveve",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "AI",
+    "LLM",
+    "OpenAI",
+    "Anthropic",
+    "cost",
+    "pricing",
+    "FinOps"
+  ],
+  "main": "./extension.cjs",
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Keyveve/veqen-sdks",
+    "directory": "vscode-extension"
+  },
+  "homepage": "https://veqen-app.com/docs/cli",
+  "bugs": {
+    "url": "https://github.com/Keyveve/veqen-sdks/issues"
+  },
+  "activationEvents": [
+    "onLanguage:python",
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact",
+    "onLanguage:json",
+    "onLanguage:yaml"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": {
+      "supported": true
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "veqen.scanModels",
+        "title": "Veqen: Inventory Model References"
+      },
+      {
+        "command": "veqen.pricingDocs",
+        "title": "Veqen: Open Pricing Documentation"
+      }
+    ],
+    "configuration": {
+      "title": "Veqen",
+      "properties": {
+        "veqen.hoverEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show offline price-book matches when hovering a quoted model identifier."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "prepare-data": "node scripts/prepare.cjs",
+    "test": "node --test test/*.test.cjs",
+    "package": "npm run prepare-data && vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "3.7.1"
+  },
+  "overrides": {
+    "@azure/identity": "4.13.0",
+    "@azure/msal-node": {
+      "uuid": "11.1.1"
+    }
+  }
+}
