@@ -1,6 +1,8 @@
 # Veqen AI cost starter
 
-A Next.js App Router example with Vercel AI SDK 6 and a list-price receipt for each response. The default demo uses explicitly labelled recorded fixtures, computes prices locally, and makes no model or telemetry requests. No account or key is needed to deploy the demo.
+See what one AI response costs, then what it could cost at scale. This Next.js and Vercel AI SDK starter puts a simple cost receipt beside each response. Try the recorded example without an account or API key; it calculates prices locally and makes no model calls. Add your own keys when you are ready to try a protected live request.
+
+[Try the live demo](https://veqen-ai-cost-starter.vercel.app/).
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FKeyveve%2Fveqen-sdks%2Ftree%2Fmain%2Fexamples%2Fvercel-ai-cost-starter&project-name=veqen-ai-cost-starter&repository-name=veqen-ai-cost-starter)
 

@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "veqen",
   "version": "1.5.0",
-  "description": "AI costs by customer, feature and agent run; savings, forecasts, budgets, bill reconciliation and month-end. Public pricing tools work without sign-in.",
+  "description": "Scale AI inference without losing track of the bill. See where your AI money goes, compare prices and manage budgets from your AI assistant.",
   "author": {
     "name": "Keyveve, Inc.",
     "email": "support@veqen-app.com",

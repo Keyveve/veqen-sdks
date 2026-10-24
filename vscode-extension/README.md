@@ -1,6 +1,6 @@
 # Veqen AI Cost Lens
 
-See AI model list prices beside model identifiers in VS Code, without an account, API key, telemetry or source-code uploads.
+See AI model prices as you code. Hover a model name to check its price, or find the models used across your project. Everything runs inside your editor. You do not need an account, and your code is never uploaded.
 
 Hover a quoted model such as `"openai/gpt-4o"` or `"gpt-4o"` in Python, JavaScript, TypeScript, JSON or YAML. The extension shows the bundled price-book date and standard rates. When a bare model name matches several billing hosts, it shows the ambiguity rather than selecting a provider for you.
 

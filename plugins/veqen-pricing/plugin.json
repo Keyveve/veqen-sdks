@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "veqen-pricing",
   "version": "1.5.0",
-  "description": "Look up AI model list prices and estimate inference workloads with Veqen's versioned price book.",
+  "description": "Know what your AI requests could cost before you build. Compare model prices and estimate a monthly bill, with no account needed.",
   "author": {"name": "Keyveve, Inc.", "url": "https://veqen-app.com", "email": "support@veqen-app.com"},
   "homepage": "https://veqen-app.com/models",
   "repository": "https://github.com/Keyveve/veqen-sdks",
@@ -12,8 +12,8 @@
     "com.openai": {
       "interface": {
         "displayName": "Veqen Pricing",
-        "shortDescription": "Estimate AI inference costs",
-        "longDescription": "Look up model list prices, compare the same workload across models, browse model categories, and project monthly inference costs. Veqen's versioned price book covers text, embeddings, images, video, speech, transcription, rerank and OCR. All four tools are read-only and require no account. Results are list-price estimates, not invoices, guaranteed savings, negotiated rates or proof of equivalent model quality. This plugin cannot read your organization's actual spend or change budgets. The separate Veqen ledger offers authenticated cost tracking and reconciliation.",
+        "shortDescription": "Know what AI requests may cost",
+        "longDescription": "Scale AI inference without losing track of the bill. Start by knowing what your requests could cost. Ask Veqen to compare model prices, estimate a monthly bill or show how costs may grow as more people use your product. No account is needed. Prices cover text, images, video, speech and other supported AI tasks. Estimates use published prices; discounts and actual usage can change your bill. A cheaper model is not necessarily a suitable replacement. This pricing plugin cannot see your company's spending or change budgets. Connect the separate Veqen ledger when you want to track real usage and check it against provider invoices.",
         "developerName": "Keyveve, Inc.",
         "category": "Developer Tools",
         "capabilities": ["Read"],

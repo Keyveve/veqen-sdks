@@ -1,6 +1,6 @@
-# Veqen: the cost ledger for AI inference
+# Scale AI inference without losing track of the bill
 
-Record model usage, calculate cost from a versioned price book, and attribute it to a customer, feature, user or project. The Python and JavaScript SDKs work locally without an account. Connect the optional [Veqen dashboard](https://veqen-app.com/signup?utm_source=github&utm_medium=referral&utm_campaign=launch-v1-5) for shared budgets, provider reconciliation and finance exports.
+Veqen shows what your AI requests cost and who they were for: a customer, a feature, a team or a project. Start with the free Python or JavaScript SDK; both work locally without an account. Connect the optional [Veqen dashboard](https://veqen-app.com/signup?utm_source=github&utm_medium=referral&utm_campaign=launch-v1-5) to see where spending goes, set budgets and check the totals against your provider bills.
 
 ## Veqen 1.5 compatibility
 
