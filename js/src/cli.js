@@ -106,7 +106,7 @@ async function productionVolumes() {
   if (!key) return { note: "_Add `VEQEN_API_KEY` to estimate the impact at your production volume._" };
   const endpoint = (process.env.VEQEN_ENDPOINT ?? "https://veqen-app.com").replace(/\/$/, "");
   try {
-    const response = await fetch(`${endpoint}/v1/usage/models?days=30`, { headers: { Authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(15_000) });
+    const response = await fetch(`${endpoint}/v1/usage/models?days=30`, { headers: { Authorization: `Bearer ${key}`, "User-Agent": process.env.GITHUB_ACTIONS ? "veqen-action/1.0" : "veqen-cli/1.0" }, signal: AbortSignal.timeout(15_000) });
     if (response.ok) return { volumes: new Map((await response.json()).models.map((m) => [`${m.provider}/${m.model}`, m])) };
     const reason = response.status === 402 ? "production volumes need a Pro or Team plan" : `the Veqen API answered HTTP ${response.status}`;
     return { note: `_Prices per call only: ${reason}._` };

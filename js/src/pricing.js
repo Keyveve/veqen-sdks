@@ -44,9 +44,12 @@ function get(key, exact = false) {
 function find(model, provider) {
   let name = String(model).trim().replace(/^models\//, "");
   const stated = providerOf(provider);
-  const own = stated && get(`${stated}/${name}`); // the host's own id, such as Together's "Qwen/Qwen3.5-9B"
-  if (own) return own;
   let head = name.includes("/") ? providerOf(name.split("/")[0]) : null;
+  // The host's own id, such as Together's "Qwen/Qwen3.5-9B" or Bedrock's under a "us." profile, as stated or named
+  for (const [host, own] of [[stated, name], [head, name.slice(name.indexOf("/") + 1)]]) {
+    const price = host && (get(`${host}/${own}`) ?? get(`${host}/${own.replace(BEDROCK_PROFILE, "")}`));
+    if (price) return price;
+  }
   if (head) name = name.slice(name.indexOf("/") + 1);
   const lab = BEDROCK_LAB.exec(name);
   if (lab) [, head, name] = lab;

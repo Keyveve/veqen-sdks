@@ -5,7 +5,19 @@ import { appendFileSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { lookup, priceBook, priceCall, providerOf } from "./pricing.js";
 
-const TAG_KEYS = ["customer", "feature", "user", "project", "environment"];
+/**
+ * Who bills a call: the host it names (Azure for its OpenAI models), except "openai", which OpenAI-compatible
+ * clients report whatever the host, so the model's own provider bills those. A provider the price book doesn't
+ * know (your own servers) stays as given, priced at list until it has a custom price.
+ */
+function billedBy(provider, price) {
+  const named = providerOf(provider);
+  if (!price) return named ?? String(provider ?? "unknown").toLowerCase();
+  if (provider && String(provider).toLowerCase() !== "unknown" && !named) return String(provider).toLowerCase();
+  return named && named !== "openai" ? named : price.provider;
+}
+
+const TAG_KEYS = ["customer", "feature", "user", "project", "environment", "run"];
 const storage = new AsyncLocalStorage();
 
 export class BudgetExceeded extends Error {
@@ -118,8 +130,7 @@ export function record(provider, model, usage, { tags = currentTags(), batch = f
   const event = {
     id: crypto.randomUUID().replaceAll("-", ""),
     ts: new Date().toISOString(),
-    // A provider the price book doesn't know (your own servers) stays as given, priced at list until it has a custom price.
-    provider: price && (!provider || String(provider).toLowerCase() === "unknown" || providerOf(provider)) ? price.provider : providerOf(provider) ?? String(provider ?? "unknown").toLowerCase(),
+    provider: billedBy(provider, price),
     model: price?.model ?? model,
     input_tokens: u.inputTokens,
     output_tokens: u.outputTokens,

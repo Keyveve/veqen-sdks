@@ -59,3 +59,14 @@ def test_openai_agents_processor_records_response_and_generation_spans(ledger):
     processor.on_span_end(NS(span_data=NS(type="function")))
     first, second = ledger()
     assert (first["input_tokens"], first["cache_read_tokens"], second["input_tokens"]) == (200, 100, 10)
+
+
+def test_openai_agents_processor_tags_the_run_with_the_trace(ledger):
+    from veqen.integrations.openai_agents import VeqenTracingProcessor
+
+    usage = NS(input_tokens=10, output_tokens=2, input_tokens_details=NS(cached_tokens=0))
+    data = NS(type="response", response=NS(model="gpt-4o", usage=usage))
+    VeqenTracingProcessor().on_span_end(NS(trace_id="trace_1", span_data=data))
+    with veqen.tags(run="mine"):
+        VeqenTracingProcessor().on_span_end(NS(trace_id="trace_2", span_data=data))
+    assert [e["run"] for e in ledger()] == ["trace_1", "mine"]

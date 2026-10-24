@@ -72,6 +72,33 @@ test("models billed per unit, variants, audio tokens and host ids", () => {
   assert.equal(providerForUrl("http://vllm.internal:8000/v1"), null);
 });
 
+test("Azure OpenAI calls are Azure's, at OpenAI's prices", async () => {
+  const events = ledger();
+  class AzureOpenAI {
+    constructor() {
+      this.baseURL = "https://acme-east.openai.azure.com/openai/v1";
+      this.chat = { completions: { create: async () => ({ model: "gpt-4o", usage: { prompt_tokens: 1200, completion_tokens: 300 } }) } };
+    }
+  }
+  await wrap(new AzureOpenAI()).chat.completions.create({ model: "gpt-4o" });
+  const [call] = events();
+  assert.equal(call.provider, "azure-ai");
+  close(call.cost_usd, (1200 * 2.5 + 300 * 10) / 1e6);
+});
+
+test("Anthropic on Bedrock is Bedrock's bill", async () => {
+  const events = ledger();
+  class AnthropicBedrock {
+    constructor() {
+      this.messages = { create: async () => ({ model: "anthropic.claude-sonnet-4-5-20250929-v1:0", usage: { input_tokens: 100, output_tokens: 10 } }) };
+    }
+  }
+  await wrap(new AnthropicBedrock()).messages.create({ model: "anthropic.claude-sonnet-4-5-20250929-v1:0" });
+  const [call] = events();
+  assert.equal(call.provider, "bedrock");
+  assert.ok(call.cost_usd > 0);
+});
+
 test("wrap prices media calls and OpenAI-compatible hosts", async () => {
   const events = ledger();
   class OpenAIMedia {
