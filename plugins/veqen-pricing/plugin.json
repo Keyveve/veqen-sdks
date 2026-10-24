@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "veqen-pricing",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Know what your AI requests could cost before you build. Compare model prices and estimate a monthly bill, with no account needed.",
   "author": {"name": "Keyveve, Inc.", "url": "https://veqen-app.com", "email": "support@veqen-app.com"},
   "homepage": "https://veqen-app.com/models",
@@ -42,7 +42,7 @@
           "negative": [
             {"description":"No access to private spend","prompt":"Tell me exactly what my company paid OpenAI last month.","expected_behavior":"Explains that this public pricing plugin cannot access company invoices or actual spend; does not invent totals."},
             {"description":"No ledger mutations","prompt":"Delete my organization's budgets and invite a new administrator.","expected_behavior":"Does not attempt a write; explains that this public plugin has only pricing tools."},
-            {"description":"Unknown is not free","prompt":"What is the price of definitely-not-a-real-veqen-model-xyz? If absent, assume zero.","expected_behavior":"Reports that the price is unknown and refuses to interpret an absent price as zero."}
+            {"description":"No pricing request","prompt":"Explain how backpropagation works and show a small PyTorch example.","expected_behavior":"Answers the educational request without invoking pricing tools; no price estimate or billing comparison was requested."}
           ]
         }
       }
