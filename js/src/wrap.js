@@ -161,6 +161,8 @@ function detect(client) {
 export function wrap(client, { residency, provider, ...defaultTags } = {}) {
   const tags = Object.fromEntries(Object.entries(defaultTags).map(([k, v]) => [k, String(v)]));
   const family = detect(client);
-  const host = provider ?? providerForUrl(client?.baseURL);
+  // Anthropic's clients for the clouds bill through the cloud, whose regional hosts no URL map can list
+  const cloud = { AnthropicBedrock: "bedrock", AnthropicVertex: "google" }[client?.constructor?.name];
+  const host = provider ?? cloud ?? providerForUrl(client?.baseURL);
   return proxy(client, family, "", tags, residency, host && host !== family ? host : undefined);
 }

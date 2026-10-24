@@ -44,6 +44,53 @@ def test_openai_compatible_hosts_are_priced_as_the_host(ledger):
     assert second["provider"] == "self-hosted"
 
 
+@pytest.mark.parametrize("cls,provider,model", [
+    ("AnthropicBedrock", "bedrock", "us.anthropic.claude-sonnet-4-5-20250929-v1:0"),  # a cross-region profile id
+    ("AsyncAnthropicBedrock", "bedrock", "anthropic.claude-sonnet-4-5-20250929-v1:0"),
+    ("AnthropicVertex", "google", "claude-sonnet-4-5@20250929"),
+])
+def test_anthropic_on_the_clouds_is_the_clouds_bill(ledger, cls, provider, model):
+    message = NS(model=model, usage=NS(input_tokens=100, output_tokens=10))
+    client = type(cls, (), {"__module__": "anthropic.lib._client"})()
+    client.messages = NS(create=(lambda **kw: message) if not cls.startswith("Async") else _async(message))
+    result = veqen.wrap(client).messages.create(model=model, messages=[], max_tokens=10)
+    if cls.startswith("Async"):
+        import asyncio
+
+        asyncio.run(result)
+    [event] = ledger()
+    assert event["provider"] == provider
+    if provider == "bedrock":  # Bedrock's own rate, under a profile id too
+        expected = veqen.lookup("bedrock/anthropic.claude-sonnet-4-5-20250929-v1:0")
+        assert expected.provider == "bedrock"
+        assert event["cost_usd"] == pytest.approx(expected.cost(veqen.pricing.Usage(100, 10)))
+
+
+def _async(value):
+    async def create(**kw):
+        return value
+    return create
+
+
+def test_openrouter_calls_are_openrouters_at_the_labs_list_price(ledger):
+    gateway = openai_client(lambda **kw: chat_completion(model="anthropic/claude-sonnet-4.5", cached=0))
+    gateway.base_url = "https://openrouter.ai/api/v1"
+    veqen.wrap(gateway).chat.completions.create(model="anthropic/claude-sonnet-4.5", messages=[])
+    [event] = ledger()
+    assert event["provider"] == "openrouter"
+    expected = veqen.lookup("anthropic/claude-sonnet-4-5").cost(veqen.pricing.Usage(1_200, 300))
+    assert event["cost_usd"] == pytest.approx(expected)
+
+
+def test_azure_openai_calls_are_azures_at_openai_prices(ledger):
+    azure = openai_client(lambda **kw: chat_completion(model="gpt-4o", cached=0))
+    azure.base_url = "https://acme-east.openai.azure.com/openai/v1/"
+    veqen.wrap(azure).chat.completions.create(model="gpt-4o", messages=[])
+    [event] = ledger()
+    assert event["provider"] == "azure-ai"
+    assert event["cost_usd"] == pytest.approx(veqen.lookup("openai/gpt-4o").cost(veqen.pricing.Usage(1_200, 300)))
+
+
 def test_openai_images_audio_and_embeddings(ledger):
     images = NS(generate=lambda **kw: NS(data=[1, 2]),
                 edit=lambda **kw: NS(data=[1], usage=NS(input_tokens=500, output_tokens=4_000)))

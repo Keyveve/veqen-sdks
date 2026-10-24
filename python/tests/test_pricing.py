@@ -46,12 +46,16 @@ def test_missing_mode_rates_derive_from_the_input_discount():
     assert price.cost(Usage(cache_read_tokens=1_000_000)) == pytest.approx(2.0)  # no cache price: billed as input
 
 
+SONNET_ON_BEDROCK = "bedrock/anthropic.claude-sonnet-4-5-20250929-v1:0"
+
+
 @pytest.mark.parametrize(
     ("reported", "provider", "key"),
     [
         ("gpt-4o-2024-08-06", None, "openai/gpt-4o-2024-08-06"),
         ("anthropic/claude-sonnet-4.5", None, "anthropic/claude-sonnet-4-5"),
-        ("us.anthropic.claude-sonnet-4-5-20250929-v1:0", "bedrock", "anthropic/claude-sonnet-4-5-20250929"),
+        ("us.anthropic.claude-sonnet-4-5-20250929-v1:0", "bedrock", SONNET_ON_BEDROCK),
+        (SONNET_ON_BEDROCK, None, SONNET_ON_BEDROCK),
         ("models/gemini-2.5-flash", "google", "google/gemini-2.5-flash"),
         ("deepseek-chat", "openai", "deepseek/deepseek-chat"),
         ("gpt-4o", "azure", "openai/gpt-4o"),
@@ -96,7 +100,7 @@ def test_audio_tokens_and_rates_a_model_lacks():
 def test_provider_for_url_reads_openai_compatible_hosts():
     book = veqen.pricing.price_book()
     assert book.provider_for_url("https://api.together.xyz/v1") == "together"
-    assert book.provider_for_url("https://my-resource.openai.azure.com/openai") == "openai"
+    assert book.provider_for_url("https://my-resource.openai.azure.com/openai") == "azure-ai"  # Azure bills it
     assert book.provider_for_url("https://x.services.ai.azure.com/models") == "azure-ai"
     assert book.provider_for_url("http://vllm.internal:8000/v1") is None
     assert book.provider_for_url(None) is None

@@ -21,10 +21,10 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
-from veqen.pricing import Usage, price_book
+from veqen.pricing import Price, Usage, price_book
 
 log = logging.getLogger("veqen")
-TAG_KEYS = ("customer", "feature", "user", "project", "environment")
+TAG_KEYS = ("customer", "feature", "user", "project", "environment", "run")
 _tags: contextvars.ContextVar[dict | None] = contextvars.ContextVar("veqen_tags", default=None)
 
 
@@ -53,6 +53,16 @@ class _Budget:
             return "*"
         value = tags.get(self.scope)
         return value if value is not None and self.value in ("*", value) else None
+
+
+def _billed_by(provider: str | None, price: Price) -> str:
+    """Who bills a call: the host it names (Azure for its OpenAI models), except "openai", which OpenAI-compatible
+    clients report whatever the host, so the model's own provider bills those. A provider the book doesn't know
+    (your own servers) stays as given, priced at list until it has a custom price in the cloud ledger."""
+    named = price_book().provider_of(provider)
+    if provider and provider.lower() != "unknown" and named is None:
+        return provider
+    return named if named and named != "openai" else price.provider
 
 
 class _Client:
@@ -143,10 +153,7 @@ class _Client:
         book = price_book()
         price = book.lookup(model, provider)
         if price is not None:
-            # A provider the book doesn't know (your own servers) stays as given, priced at list until it has a
-            # custom price in the cloud ledger.
-            if not provider or provider.lower() == "unknown" or book.provider_of(provider):
-                provider = price.provider
+            provider = _billed_by(provider, price)
             # A call that reported no usage keeps the cost it came with, rather than pricing at zero.
             if usage.tokens or usage.units or cost_usd is None:
                 priced = price.cost(

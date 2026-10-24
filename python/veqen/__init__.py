@@ -15,7 +15,7 @@ from veqen.client import BudgetExceeded, budget, current_tags, flush, init, reco
 from veqen.pricing import Price, PriceBook, Usage, cost, lookup, price_book
 from veqen.wrap import wrap
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __all__ = [
     "BudgetExceeded",
     "Price",

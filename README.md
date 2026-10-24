@@ -1,6 +1,10 @@
 # Veqen: the cost ledger for AI inference
 
-Record model usage, calculate cost from a versioned price book, and attribute it to a customer, feature, user or project. The Python and JavaScript SDKs work locally without an account. Connect the optional [Veqen dashboard](https://veqen-app.com/signup?utm_source=github&utm_medium=referral&utm_campaign=launch-v1) for shared budgets, provider reconciliation and finance exports.
+Record model usage, calculate cost from a versioned price book, and attribute it to a customer, feature, user or project. The Python and JavaScript SDKs work locally without an account. Connect the optional [Veqen dashboard](https://veqen-app.com/signup?utm_source=github&utm_medium=referral&utm_campaign=launch-v1-5) for shared budgets, provider reconciliation and finance exports.
+
+## Veqen 1.5 compatibility
+
+Python SDK 1.3.0 and JavaScript SDK 1.1.0 add agent-run attribution and correct billing-host attribution for Azure, Bedrock, Vertex and OpenRouter. Python also adds a LlamaIndex event handler. SDK and cloud versions are independent. [Release notes](https://veqen-app.com/docs/whats-new).
 
 ## Python
 
@@ -59,7 +63,7 @@ No account or network reporting is required for local cost tracking. Set `VEQEN_
 
 Already using OpenLLMetry? Follow the tested [Collector setup](examples/openllmetry/) to export GenAI usage to Veqen with customer and feature attribution.
 
-Connect to `https://veqen-app.com/mcp` using OAuth or a Veqen API key. Root `plugin.json`, `mcp.json` and [skills](skills/) describe the agent integration. See [connection instructions](https://veqen-app.com/docs/mcp).
+Connect to `https://veqen-app.com/mcp` using OAuth or a full-access Veqen API key. Root `plugin.json`, `mcp.json` and [skills](skills/) describe the agent integration. The public `https://veqen-app.com/mcp/prices` server needs no sign-in and offers model prices, comparisons and workload simulation. See [connection instructions](https://veqen-app.com/docs/mcp) and [agent documentation](https://veqen-app.com/docs/agents).
 
 ## Migrating from 0.x
 

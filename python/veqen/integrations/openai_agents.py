@@ -29,7 +29,9 @@ class VeqenTracingProcessor:
         else:
             return
         if extracted and extracted[0]:
-            client.record("openai", str(extracted[0]), extracted[1], tags={**self.tags, **current_tags()},
+            # An agent run is a run, unless the code tags its own
+            run = {"run": span.trace_id} if getattr(span, "trace_id", None) else {}
+            client.record("openai", str(extracted[0]), extracted[1], tags={**run, **self.tags, **current_tags()},
                           service_tier=extracted[2])
 
     def on_trace_start(self, trace: Any) -> None: ...

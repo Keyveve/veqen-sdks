@@ -162,9 +162,11 @@ class PriceBook:
         "models/gemini-2.5-pro", "together_ai/meta-llama/Llama-3.3-70B-Instruct-Turbo", Bedrock ids)."""
         name = model.strip().removeprefix("models/")
         stated = self.provider_of(provider)
-        if stated and (price := self._get(f"{stated}/{name}")):
-            return price  # the host's own id, such as Together's "Qwen/Qwen3.5-9B" or Groq's "openai/gpt-oss-120b"
         head = self.provider_of(name.split("/", 1)[0]) if "/" in name else None
+        # The host's own id, such as Together's "Qwen/Qwen3.5-9B" or Bedrock's under a "us." profile, as stated or named
+        for host, own in ((stated, name), (head, name.split("/", 1)[-1])):
+            if host and (price := self._get(f"{host}/{own}") or self._get(f"{host}/{_BEDROCK_PROFILE.sub('', own)}")):
+                return price
         if head:
             name = name.split("/", 1)[1]
         if lab := _BEDROCK_LAB.match(name):

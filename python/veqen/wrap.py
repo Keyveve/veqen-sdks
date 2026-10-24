@@ -284,6 +284,11 @@ class _Proxy:
         return call
 
 
+# Anthropic's clients for the clouds bill through the cloud, whose regional hosts no URL map can list
+_CLOUDS = {"AnthropicBedrock": "bedrock", "AsyncAnthropicBedrock": "bedrock", "AnthropicVertex": "google",
+           "AsyncAnthropicVertex": "google"}
+
+
 def _detect(client: Any) -> str:
     module = type(client).__module__.split(".")[0]
     if module in ("openai", "anthropic"):
@@ -299,6 +304,7 @@ def wrap(client: Any, *, residency: str | None = None, provider: str | None = No
     OpenAI-compatible clients pointed at another host are priced as that host's models. Pass ``provider``
     for a host Veqen doesn't recognize, such as your own vLLM server with a custom price."""
     family = _detect(client)
-    host = provider or price_book().provider_for_url(getattr(client, "base_url", None))
+    url = getattr(client, "base_url", None)
+    host = provider or _CLOUDS.get(type(client).__name__) or price_book().provider_for_url(url)
     return _Proxy(client, family, (), {k: str(v) for k, v in default_tags.items()}, residency,
                   host if host and host != family else None)

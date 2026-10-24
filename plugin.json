@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "veqen",
-  "version": "1.0.0",
-  "description": "The cost ledger for AI inference: ask about AI spend by customer, feature and model, check it against provider bills, estimate model switches, and add cost tracking to code.",
+  "version": "1.5.0",
+  "description": "AI costs by customer, feature and agent run; savings, forecasts, budgets, bill reconciliation and month-end. Public pricing tools work without sign-in.",
   "author": {
     "name": "Keyveve, Inc.",
     "email": "support@veqen-app.com",

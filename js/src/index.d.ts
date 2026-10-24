@@ -20,7 +20,7 @@ export interface CostOptions {
   /** An image size and quality ("hd/1024x1792") or a video resolution ("1080p"). */
   variant?: string;
 }
-export type Tags = { customer?: string; feature?: string; user?: string; project?: string; environment?: string } & Record<string, string>;
+export type Tags = { customer?: string; feature?: string; user?: string; project?: string; environment?: string; run?: string } & Record<string, string>;
 export interface Price {
   key: string;
   provider: string;
