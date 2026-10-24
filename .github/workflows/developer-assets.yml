@@ -1,0 +1,39 @@
+name: Developer distribution assets
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  starter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: examples/vercel-ai-cost-starter
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - run: npm ci --ignore-scripts
+      - run: npm audit --audit-level=high
+      - run: npm test
+      - run: npm run build
+  extension:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: vscode-extension
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - run: npm ci --ignore-scripts
+      - run: npm audit --audit-level=high
+      - run: npm run prepare-data
+      - run: npm test
+      - run: npm run package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: veqen-cost-lens
+          path: vscode-extension/*.vsix
+          if-no-files-found: error

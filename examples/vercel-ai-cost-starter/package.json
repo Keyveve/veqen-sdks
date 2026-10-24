@@ -1,0 +1,9 @@
+{
+  "name": "veqen-ai-cost-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"dev":"next dev", "build":"next build", "start":"next start", "test":"node --test test/*.test.js"},
+  "dependencies": {"next":"16.4.3", "react":"19.3.1", "react-dom":"19.3.1", "ai":"6.0.315", "@ai-sdk/openai":"3.0.131", "@veqen/sdk":"1.1.0"},
+  "engines": {"node":">=22"}
+}
