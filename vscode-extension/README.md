@@ -2,6 +2,8 @@
 
 See AI model prices as you code. Hover a model name to check its price, or find the models used across your project. Everything runs inside your editor. You do not need an account, and your code is never uploaded.
 
+[Install from Open VSX](https://open-vsx.org/extension/Keyveve/veqen-cost-lens). Version 0.1.0 is public; [publisher ownership verification](https://github.com/EclipseFdn/open-vsx.org/issues/14656) is pending, so the listing currently shows an unverified-publisher warning. Microsoft Marketplace publication is still pending separately.
+
 Hover a quoted model such as `"openai/gpt-4o"` or `"gpt-4o"` in Python, JavaScript, TypeScript, JSON or YAML. The extension shows the bundled price-book date and standard rates. When a bare model name matches several billing hosts, it shows the ambiguity rather than selecting a provider for you.
 
 Run **Veqen: Inventory Model References** from the Command Palette to list recognized references and their locations in the output panel. The scan reads at most 200 supported source files, skips files larger than 500 KB and common dependency/build directories, and reports when it is partial. It does not execute project code or invoke a shell. It can operate in an untrusted or virtual workspace.
@@ -23,7 +25,7 @@ npm test
 npm run package
 ```
 
-In VS Code choose **Extensions: Install from VSIX…** and select the generated file. Marketplace and Open VSX publication require the publisher account to own the `Keyveve` namespace; a generated VSIX is not evidence of a marketplace listing.
+In VS Code choose **Extensions: Install from VSIX…** and select the generated file. A local build is separate from the published Open VSX version linked above.
 
 The price book comes from `../python/veqen/data/prices.json`. Packaging copies the repository's reviewed snapshot and license notices; it never downloads a price book during editor use.
 

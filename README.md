@@ -61,7 +61,7 @@ No account or network reporting is required for local cost tracking. Set `VEQEN_
 
 ## Agent integration
 
-Try the [Next.js / Vercel AI SDK cost starter](examples/vercel-ai-cost-starter/) for a deployable response-and-receipt example. Its default demo needs no API keys and makes no inference requests. [Veqen AI Cost Lens](vscode-extension/) adds offline model-price hovers and a local model inventory to VS Code; build its VSIX from source or download the CI artifact. Marketplace publication is tracked separately from the source release.
+Try the [live AI cost starter](https://veqen-ai-cost-starter.vercel.app/) and its [Next.js / Vercel AI SDK source](examples/vercel-ai-cost-starter/) to see an AI response alongside its estimated cost. The default demo needs no API keys and makes no inference requests. [Veqen AI Cost Lens on Open VSX](https://open-vsx.org/extension/Keyveve/veqen-cost-lens) adds offline model-price hovers and a local model inventory. Its publisher ownership review is pending; the listing currently displays an unverified-publisher warning. You can also [build and install the VSIX](vscode-extension/).
 
 The [Veqen Pricing plugin package](plugins/veqen-pricing/) exposes only the four public read-only pricing tools. The package is prepared for directory review; this repository does not imply directory approval.
 
