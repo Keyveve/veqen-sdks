@@ -8,6 +8,8 @@ As of 2026-10-24 UTC, direct live MCP checks passed all six tested calls, includ
 
 OpenAI business verification is approved and the package is uploaded as a draft. Domain verification, tool discovery and final submission are still pending. No OpenAI directory approval is claimed.
 
-The root repository plugin is the separate authenticated Veqen ledger integration. Do not swap its credentials or write-capable endpoint into this public pricing package.
+Version 2.0.0 updates the positioning to cost monitoring and protection for AI; the public endpoint still exposes only four read-only pricing tools.
+
+The root repository plugin is the separate authenticated Veqen integration for recorded spend and protection incidents. Do not swap its credentials or write-capable endpoint into this public pricing package.
 
 [Connection documentation](https://veqen-app.com/docs/mcp) · [Pricing methodology](https://veqen-app.com/docs/price-book)
